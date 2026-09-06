@@ -1,9 +1,8 @@
 import argparse
 
-from src.commands.help import help
+from .commands.help import help
 
-"""
-"""
+
 def parse_args(parser: argparse.ArgumentParser) -> any:
 
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -14,8 +13,7 @@ def parse_args(parser: argparse.ArgumentParser) -> any:
 
     return parser.parse_args()
 
-"""
-"""
+
 def main():
 
     parser = argparse.ArgumentParser(

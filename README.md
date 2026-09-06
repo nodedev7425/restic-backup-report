@@ -17,7 +17,7 @@ A small Python-based monitoring and reporting tool for [Restic](https://restic.n
 
 ### 1.1 System
 - Debian
-- Python 3.14 or newer
+- Python 3.12 or newer
 - Restic 0.19.1 or newer
 
 <br>

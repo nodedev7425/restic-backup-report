@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "restic-backup-report"
+version = "0.1.0"
+description = "Monitoring and reporting tool for Restic backups"
+requires-python = ">=3.12"
+
+[project.scripts]
+restic-backup-report = "restic_backup_report.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
