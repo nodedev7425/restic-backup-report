@@ -32,6 +32,10 @@ A small Python-based monitoring and reporting tool for [Restic](https://restic.n
 
 ## 2. Getting ready
 
+```shell
+pipenv run pip install -e .
+```
+
 <br>
 
 ## 3. Command usage
