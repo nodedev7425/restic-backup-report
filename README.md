@@ -8,7 +8,8 @@ A small Python-based monitoring and reporting tool for [Restic](https://restic.n
 - [1. Project requirements](#1-project-requirements)
     - [1.1 System](#11-system)
     - [1.2 Python](#12-python)
-- [2. Command usage](#2-command-usage)
+- [2. Getting ready]()
+- [3. Command usage](#2-command-usage)
 
 <br>
 
@@ -29,4 +30,8 @@ A small Python-based monitoring and reporting tool for [Restic](https://restic.n
 
 <br>
 
-## 2. Command usage
+## 2. Getting ready
+
+<br>
+
+## 3. Command usage
