@@ -9,6 +9,9 @@ cerberus = "*"
 questionary = "*"
 rich = "*"
 pyyaml = "*"
+argon2-cffi = "*"
+cryptography = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
