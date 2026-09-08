@@ -22,6 +22,7 @@ class InputType(Enum):
 
 class Target(ABC):
 
+
     @staticmethod
     def request_attribute(name: str, input_type: InputType,
         values: Sequence[str] | None = None) -> Any:
@@ -66,18 +67,22 @@ class Target(ABC):
         else:
             self._create(definition)
 
+
     @abstractmethod
     def validator_schema(self) -> dict:
         raise NotImplementedError
+
 
     @abstractmethod
     def _inputs(self) -> None:
         self.name = Target.request_attribute("name", InputType.TEXT)
         self.type = type(self)
 
+
     @abstractmethod
     def _create(self, inputs: dict) -> None:
         raise NotImplementedError
+
 
     @abstractmethod
     def to_yaml(self) -> dict:
@@ -86,7 +91,9 @@ class Target(ABC):
 
 class TargetTypeRegister:
 
+
     _target_types: dict[str, type[Target]] = {}
+
 
     @classmethod
     def register(cls, name: str, target: type[Target]) -> None:
@@ -95,6 +102,7 @@ class TargetTypeRegister:
 
         cls._target_types[name] = target
 
+
     @classmethod
     def get(cls, name: str) -> type[Target]:
         try:
@@ -102,9 +110,11 @@ class TargetTypeRegister:
         except KeyError:
             raise KeyError(f"Target type '{name}' is not registered")
 
+
     @classmethod
     def names(cls) -> list[str]:
         return list(cls._target_types.keys())
+
 
     @classmethod
     def has(cls, name: str) -> bool:

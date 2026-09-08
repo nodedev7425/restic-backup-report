@@ -11,10 +11,9 @@ def setup(args) -> None:
 
     try:
         writer = ConfigWriter(args.config)
-        
+
         writer.save(ConfigSection.TARGET, 
-            args.target_type,
-            target.name,
+            [args.target_type, target.name],
             target.to_yaml()
         )
 

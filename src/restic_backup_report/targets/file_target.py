@@ -3,6 +3,7 @@ from .base_target import Target, InputType
 
 class FileTarget(Target):
 
+
     def _inputs(self) -> None:
         super()._inputs()
 
@@ -10,9 +11,11 @@ class FileTarget(Target):
             "path", 
             InputType.FILE
         )
+
     
     def _create(self, inputs: dict) -> None:
         self.path = inputs["path"]
+
 
     def validator_schema(self) -> dict:
         return {
@@ -21,6 +24,7 @@ class FileTarget(Target):
                 "required": True,
             }
         }
+
 
     def to_yaml(self) -> dict:
         return {

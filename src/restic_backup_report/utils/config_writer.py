@@ -12,6 +12,7 @@ class ConfigSection(Enum):
 
 class ConfigWriter:
 
+
     def __init__(self, path: str, generate = False) -> None:
 
         if not is_writable(path):
@@ -20,8 +21,10 @@ class ConfigWriter:
         self.path = path
         self.generate = generate
 
+
     def __write_new_target(self, name: str, type: str, yaml: dict):
         pass
+
 
     def save(self, section: ConfigSection, args: list[str], yaml: dict):
 
