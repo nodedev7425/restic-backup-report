@@ -1,4 +1,4 @@
-from .targets.target import register_targets
+from .targets.base_target import register_targets
 from .cli import register_cmds
 
 from .targets.file_target import FileTarget

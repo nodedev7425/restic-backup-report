@@ -1,7 +1,18 @@
-from .target import Target, InputType
+from .base_target import Target, InputType
 
 
 class FileTarget(Target):
+
+    def _inputs(self) -> None:
+        super()._inputs()
+
+        self.path = self.request_attribute(
+            "path", 
+            InputType.FILE
+        )
+    
+    def _create(self, inputs: dict) -> None:
+        self.path = inputs["path"]
 
     def validator_schema(self) -> dict:
         return {
@@ -11,13 +22,7 @@ class FileTarget(Target):
             }
         }
 
-    def _inputs(self) -> None:
-        super()._inputs()
-
-        self.path = self.request_attribute(
-            "path", 
-            InputType.FILE
-        )
-
-    def _create(self, inputs: dict) -> None:
-        raise NotImplementedError
+    def to_yaml(self) -> dict:
+        return {
+            "path": self.path
+        }

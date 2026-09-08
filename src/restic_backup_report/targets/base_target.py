@@ -1,10 +1,13 @@
+import os
+
 from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import Any, Sequence
 
 import questionary
 
-from restic_backup_report.types import is_file, is_directory, is_integer  
+from restic_backup_report.types import is_directory, is_integer
+from restic_backup_report.utils.filesystem import is_writable  
 
 
 class InputType(Enum):
@@ -48,7 +51,7 @@ class Target(ABC):
                 ).ask()
 
             case InputType.FILE:
-                return questionary.path(f"{name}:", validate=is_file).ask()
+                return questionary.path(f"{name}:", validate=is_writable).ask()
 
             case InputType.DIRECTORY:
                 return questionary.path(f"{name}:", validate=is_directory).ask()
@@ -60,6 +63,8 @@ class Target(ABC):
     def __init__(self, definition: dict | None = None) -> None:
         if definition is None:
             self._inputs()
+        else:
+            self._create(definition)
 
     @abstractmethod
     def validator_schema(self) -> dict:
@@ -74,8 +79,9 @@ class Target(ABC):
     def _create(self, inputs: dict) -> None:
         raise NotImplementedError
 
-    def save(self) -> None:
-        pass
+    @abstractmethod
+    def to_yaml(self) -> dict:
+        raise NotImplementedError
 
 
 class TargetTypeRegister:

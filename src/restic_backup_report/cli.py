@@ -8,7 +8,7 @@ from .commands.config import show, validate, generate, set_secret
 from .commands.report import report
 from .commands.target import setup, test
 
-from .targets.target import TargetTypeRegister
+from .targets.base_target import TargetTypeRegister
 
 
 def parse_args(parser: argparse.ArgumentParser) -> Any:
