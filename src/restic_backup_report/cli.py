@@ -1,16 +1,20 @@
 import argparse
 
+from typing import Any
+
 from .types import file_path
 
 from .commands.config import show, validate, generate, set_secret
 from .commands.report import report
 from .commands.target import setup, test
 
+from .targets.target import TargetTypeRegister
 
-def parse_args(parser: argparse.ArgumentParser) -> any:
+
+def parse_args(parser: argparse.ArgumentParser) -> Any:
 
     subparsers = parser.add_subparsers(
-        dest="command", 
+        dest="command",
         required=True
     )
 
@@ -76,6 +80,11 @@ def parse_args(parser: argparse.ArgumentParser) -> any:
     target_setup_parser = target_subparsers.add_parser("setup")
     target_setup_parser.set_defaults(func=setup)
 
+    target_setup_parser.add_argument(
+        "target_type",
+        choices=TargetTypeRegister.names(),
+    )
+
     target_test_parser = target_subparsers.add_parser("test")
     target_test_parser.set_defaults(func=test)
 
@@ -87,7 +96,7 @@ def parse_args(parser: argparse.ArgumentParser) -> any:
     return parser.parse_args()
 
 
-def main():
+def register_cmds():
 
     parser = argparse.ArgumentParser(
         prog="restic-backup-report",
