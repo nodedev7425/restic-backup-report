@@ -1,5 +1,5 @@
-def setup() -> None:
+def setup(args) -> None:
     print("report")
 
-def test() -> None:
+def test(args) -> None:
     print("report")

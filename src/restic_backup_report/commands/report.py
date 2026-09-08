@@ -1,2 +1,2 @@
-def report() -> None:
+def report(args) -> None:
     print("report")

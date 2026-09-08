@@ -1,11 +1,11 @@
-def show() -> None:
+def show(args) -> None:
     print("config: show")
 
-def validate() -> None:
+def validate(args) -> None:
     print("config: validate")
 
-def generate() -> None:
+def generate(args) -> None:
     print("config: generate")
 
-def set_secret() -> None:
+def set_secret(args) -> None:
     print("config: set_secret")
