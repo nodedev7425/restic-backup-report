@@ -44,12 +44,12 @@ class ConfigWriter:
         }
 
         rendered = config_template.render(**data)
-        config = yaml.safe_load(rendered)
 
         with open(self.path, "w") as f:
-            yaml.safe_dump(config, f, sort_keys=False)
+            f.write(rendered)
 
         return master_key
+    
 
     def add_repository(self):
         pass

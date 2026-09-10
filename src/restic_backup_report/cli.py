@@ -46,18 +46,16 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     config_add_parser.set_defaults(func=add)
 
     config_add_parser.add_argument(
-        "target_type",
-        choices=["repository", "storage"],
-        required=True
+        "add_type",
+        choices=["repository", "storage"]
     )
 
     config_remove_parser = config_subparsers.add_parser("remove")
     config_remove_parser.set_defaults(func=remove)
 
     config_remove_parser.add_argument(
-        "target_type",
-        choices=["repository", "storage"],
-        required=True
+        "remove_type",
+        choices=["repository", "storage"]
     )
 
     ## Command: report
@@ -97,8 +95,7 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
 
     target_setup_parser.add_argument(
         "target_type",
-        choices=TargetTypeRegister.names(),
-        required=True
+        choices=TargetTypeRegister.names()
     )
 
     target_test_parser = target_subparsers.add_parser("test")
