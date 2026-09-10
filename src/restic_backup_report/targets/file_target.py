@@ -1,3 +1,5 @@
+from restic_backup_report.utils.console import request_attribute
+
 from .base_target import Target, InputType
 
 
@@ -7,7 +9,7 @@ class FileTarget(Target):
     def _inputs(self) -> None:
         super()._inputs()
 
-        self.path = self.request_attribute(
+        self.path = request_attribute(
             "path", 
             InputType.FILE
         )

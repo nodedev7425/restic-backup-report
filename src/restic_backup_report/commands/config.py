@@ -4,7 +4,7 @@ import tempfile
 
 import questionary
 
-from restic_backup_report.utils.config_writer import ConfigWriter
+from restic_backup_report.utils.config_writer import ConfigValidationError, ConfigWriter
 
 from restic_backup_report.utils.console import print_error
 
@@ -48,7 +48,18 @@ def generate(args) -> None:
 
 
 def add(args) -> None:
-    print("config: add")
+    try:
+        writer = ConfigWriter(args.config)
+        writer.can_change_config()
+
+    except ConfigValidationError as e:
+        print_error(
+            f""
+        ) 
+    except Exception as e:
+        print_error(
+            f"Unexpected error. Please report this issue:\n{e}"
+        )
 
 
 def remove(args) -> None:

@@ -13,6 +13,10 @@ from restic_backup_report.targets.base_target import Target
 from restic_backup_report.templates.config_template import template as config_template
 
 
+class ConfigValidationError(Exception):
+    pass
+
+
 class ConfigWriter:
 
 
@@ -24,7 +28,9 @@ class ConfigWriter:
         self.path = path
 
 
-    def __write_target(self, target: Target):
+    def can_change_config(self) -> None:
+        # IF: Secret is None
+        # IF: Secret is wrong
         pass
 
 
@@ -51,7 +57,7 @@ class ConfigWriter:
         return master_key
     
 
-    def add_repository(self):
+    def add_repository(self, master_key: str):
         pass
 
 

@@ -11,11 +11,13 @@ def setup(args) -> None:
 
     try:
         writer = ConfigWriter(args.config)
+        writer.can_change_config()
+
         writer.add_target(target)
 
     except PermissionError as e:
         print_error(e.args[0])
-
+    
 
 def test(args) -> None:
     print("report")

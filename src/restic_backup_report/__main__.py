@@ -1,12 +1,28 @@
-from .targets.base_target import register_targets
+import os
+
+from .targets.base_target import TargetTypeRegister
 from .cli import register_cmds
 
 from .targets.file_target import FileTarget
 
+from .utils.console import print_warn
+
+
+def read_report_config_secret(path: str) -> str:
+
+    print_warn("RESTIC_BACKUP_REPORT_MASTER_KEY_FILE is not accessable")
+
+    return ""
+
 
 if __name__ == "__main__":
 
-    register_targets({
+    if os.environ['RESTIC_BACKUP_REPORT_MASTER_KEY_FILE']:
+        RESTIC_BACKUP_REPORT_MASTER_KEY: str = read_report_config_secret(
+            os.environ['RESTIC_BACKUP_REPORT_MASTER_KEY_FILE']
+        )
+
+    TargetTypeRegister.register_targets({
         "file": FileTarget
     })
 
