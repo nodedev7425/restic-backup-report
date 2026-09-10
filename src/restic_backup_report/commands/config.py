@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 
 import questionary
 
@@ -25,7 +26,17 @@ def generate(args) -> None:
                 return
 
         writer = ConfigWriter(args.config)
-        writer.new()
+        master_key = writer.new_config()
+
+        new_file, filename = tempfile.mkstemp()
+        os.write(new_file, str.encode(master_key))
+        os.close(new_file)
+
+        print(
+            "Master key generated successfully.\n"
+            f"Temporare file: {filename}\n"
+            "Store it securely; it cannot be recovered."
+        )
 
     except PermissionError as e:
         print_error(str(e))

@@ -11,7 +11,7 @@ rich = "*"
 pyyaml = "*"
 argon2-cffi = "*"
 cryptography = "*"
-python-dotenv = "*"
+jinja2 = "*"
 
 [dev-packages]
 
