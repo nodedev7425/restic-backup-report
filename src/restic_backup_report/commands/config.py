@@ -1,12 +1,13 @@
 import os
-import sys
 import tempfile
 
 import questionary
 
+from restic_backup_report.__main__ import RESTIC_BACKUP_REPORT_MASTER_KEY
+
 from restic_backup_report.utils.config_writer import ConfigValidationError, ConfigWriter
 
-from restic_backup_report.utils.console import print_error
+from restic_backup_report.utils.console import print_error, InputType, request_attribute
 
 
 def show(args) -> None:
@@ -52,9 +53,21 @@ def add(args) -> None:
         writer = ConfigWriter(args.config)
         writer.can_change_config()
 
+        name = request_attribute("repository name", InputType.TEXT)
+        path = request_attribute("repository path", InputType.DIRECTORY)
+        password = request_attribute("repository password", InputType.PASSWORD)
+        report = request_attribute("repository name", InputType.SELECT, [])
+        frequency = request_attribute("repository name", InputType.SELECT, [])
+        tolerance = request_attribute("repository name", InputType.INTEGER)
+
+        writer.add_repository(
+            RESTIC_BACKUP_REPORT_MASTER_KEY, 
+            name, path, password, report, frequency, tolerance
+        )
+
     except ConfigValidationError as e:
         print_error(
-            f""
+            f"\n{e}"
         ) 
     except Exception as e:
         print_error(

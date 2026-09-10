@@ -8,7 +8,7 @@ from .targets.file_target import FileTarget
 from .utils.console import print_warn
 
 
-def read_report_config_secret(path: str) -> str:
+def read_restic_repository_secret(path: str) -> str:
 
     print_warn("RESTIC_BACKUP_REPORT_MASTER_KEY_FILE is not accessable")
 
@@ -18,7 +18,7 @@ def read_report_config_secret(path: str) -> str:
 if __name__ == "__main__":
 
     if os.environ['RESTIC_BACKUP_REPORT_MASTER_KEY_FILE']:
-        RESTIC_BACKUP_REPORT_MASTER_KEY: str = read_report_config_secret(
+        RESTIC_BACKUP_REPORT_MASTER_KEY: str = read_restic_repository_secret(
             os.environ['RESTIC_BACKUP_REPORT_MASTER_KEY_FILE']
         )
 
