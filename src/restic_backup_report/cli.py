@@ -4,7 +4,7 @@ from typing import Any
 
 from .types import file_path
 
-from .commands.config import show, validate, generate, set_secret
+from .commands.config import show, validate, generate, add, remove
 from .commands.report import report
 from .commands.target import setup, test
 
@@ -42,8 +42,23 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     config_generate_parser = config_subparsers.add_parser("generate")
     config_generate_parser.set_defaults(func=generate)
 
-    config_set_secret_parser = config_subparsers.add_parser("set-secret")
-    config_set_secret_parser.set_defaults(func=set_secret)
+    config_add_parser = config_subparsers.add_parser("add")
+    config_add_parser.set_defaults(func=add)
+
+    config_add_parser.add_argument(
+        "target_type",
+        choices=["repository", "storage"],
+        required=True
+    )
+
+    config_remove_parser = config_subparsers.add_parser("remove")
+    config_remove_parser.set_defaults(func=remove)
+
+    config_remove_parser.add_argument(
+        "target_type",
+        choices=["repository", "storage"],
+        required=True
+    )
 
     ## Command: report
 
@@ -83,6 +98,7 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     target_setup_parser.add_argument(
         "target_type",
         choices=TargetTypeRegister.names(),
+        required=True
     )
 
     target_test_parser = target_subparsers.add_parser("test")

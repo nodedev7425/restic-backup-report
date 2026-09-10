@@ -47,5 +47,9 @@ def generate(args) -> None:
         )
 
 
-def set_secret(args) -> None:
-    print("config: set_secret")
+def add(args) -> None:
+    print("config: add")
+
+
+def remove(args) -> None:
+    print("config: remove")
