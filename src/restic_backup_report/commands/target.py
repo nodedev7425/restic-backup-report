@@ -17,6 +17,8 @@ def setup(args) -> None:
         if len(target.encrypted_fields()) > 0:
             master_key = get_master_key()
             writer.is_secret_valid(master_key) # type: ignore
+        else:
+            master_key = None
 
         if writer.has_target(target.name):
             raise ConfigValidationError("Target already exists")

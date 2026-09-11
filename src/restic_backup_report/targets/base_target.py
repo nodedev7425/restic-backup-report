@@ -43,7 +43,7 @@ class Target(ABC):
 
 
     @abstractmethod
-    def to_yaml(self) -> dict:
+    def to_yaml(self) -> str:
         raise NotImplementedError
 
 
