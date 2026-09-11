@@ -36,7 +36,7 @@ class FileTarget(Target):
         return {}        
 
 
-    def to_yaml(self) -> dict:
+    def to_dict(self) -> dict:
         return {
             "path": self.path
         }

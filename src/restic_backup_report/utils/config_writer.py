@@ -12,7 +12,7 @@ from restic_backup_report.app_info import CONFIG_STANDARD
 
 from restic_backup_report.utils.filesystem import is_writable
 
-from restic_backup_report.targets.base_target import Target
+from restic_backup_report.targets.base_target import Target, TargetTypeRegister
 
 from restic_backup_report.templates.config_template import template as config_template
 from restic_backup_report.templates.repository_template import template as repository_template
@@ -138,7 +138,7 @@ class ConfigWriter:
         
         data = {
             "target_name": target.name,
-            "target_type": target.type,
+            "target_type": TargetTypeRegister.get_name(target.type),
             "target_format": "<placeholder>",
         }
 
@@ -147,7 +147,7 @@ class ConfigWriter:
         yaml.indent(mapping=2, sequence=2, offset=0)
         yaml.width = 4096
 
-        rendered = repository_template.render(**data)
+        rendered = target_base_template.render(**data)
 
         target_root = yaml.load(rendered)
         target_config = yaml.load(target.to_yaml())
@@ -168,7 +168,7 @@ class ConfigWriter:
             parent[f"{field}_nonce"] = nonce
             parent[field] = encrypted_value
 
-        target_root[target.type].append(target_config)
+        target_root["config"] = target_config
 
         with open(self.path, "r", encoding="utf-8") as f:
             config = yaml.load(f)
