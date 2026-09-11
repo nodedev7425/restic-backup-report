@@ -35,7 +35,12 @@ class Target(ABC):
     @abstractmethod
     def send(self) -> None:
         raise NotImplementedError
-    
+
+
+    @abstractmethod
+    def encrypted_fields(self) -> dict[str, str]:   # field name, yaml path
+        raise NotImplementedError
+
 
     @abstractmethod
     def to_yaml(self) -> dict:

@@ -28,6 +28,14 @@ class FileTarget(Target):
         }
 
 
+    def send(self) -> None:
+        print("send")
+
+
+    def encrypted_fields(self) -> dict[str, str]:
+        return {}        
+
+
     def to_yaml(self) -> dict:
         return {
             "path": self.path

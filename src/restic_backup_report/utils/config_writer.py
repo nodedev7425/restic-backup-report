@@ -16,6 +16,9 @@ from restic_backup_report.targets.base_target import Target
 
 from restic_backup_report.templates.config_template import template as config_template
 from restic_backup_report.templates.repository_template import template as repository_template
+from restic_backup_report.templates.target_base_template import template as target_base_template
+
+from restic_backup_report.utils.yaml import get_nested, get_parent, set_nested
 
 
 class ConfigValidationError(Exception):
@@ -38,10 +41,10 @@ class ConfigWriter:
     """    
 
 
-    def is_secret_valid(self, master_key: str) -> None:
+    def is_secret_valid(self, master_key: str) -> bool:
         # IF: Secret is None
         # IF: Secret is wrong
-        pass
+        return True
 
 
     def new_config(self) -> str:
@@ -124,8 +127,61 @@ class ConfigWriter:
         Target
     """    
 
-    def add_target(self, target: Target, master_key: str = "") -> None:
-        pass
+
+    def has_target(self, name: str) -> bool:
+        return False
+
+
+    def add_target(self, target: Target, master_key: str | None) -> None:
+
+        encrypted_fields = target.encrypted_fields()
+        
+        data = {
+            "target_name": target.name,
+            "target_type": target.type,
+            "target_format": "<placeholder>",
+        }
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096
+
+        rendered = repository_template.render(**data)
+
+        target_root = yaml.load(rendered)
+        target_config = yaml.load(target.to_yaml())
+
+        for yaml_key in encrypted_fields.values():
+
+            parent, field = get_parent(target_config, yaml_key)
+
+            aesgcm = AESGCM(bytes.fromhex(master_key)) # type: ignore
+            nonce = os.urandom(12)
+
+            encrypted_value = aesgcm.encrypt(
+                nonce,
+                parent[field].encode("utf-8"),
+                None,
+            )
+
+            parent[f"{field}_nonce"] = nonce
+            parent[field] = encrypted_value
+
+        target_root[target.type].append(target_config)
+
+        with open(self.path, "r", encoding="utf-8") as f:
+            config = yaml.load(f)
+
+        if config is None:
+            config = {}
+
+        if "targets" not in config:
+            config["targets"] = []
+        config["targets"].append(target_root)
+
+        with open(self.path, "w", encoding="utf-8") as f:
+            yaml.dump(config, f)
 
 
     
