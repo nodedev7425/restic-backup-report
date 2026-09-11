@@ -53,7 +53,7 @@ def add(args) -> None:
         writer = ConfigWriter(args.config)
         master_key = get_master_key()
 
-        if writer.is_secret_valid(master_key): # type: ignore
+        if not writer.is_secret_valid(master_key): # type: ignore
             raise MasterKeyError("Invalid master key")
 
         name = request_attribute("repository name", InputType.TEXT)
