@@ -33,7 +33,7 @@ class Target(ABC):
 
 
     @abstractmethod
-    def send(self, *args: Any) -> None:
+    def send(self) -> None:
         raise NotImplementedError
     
 
