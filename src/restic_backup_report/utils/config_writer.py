@@ -33,7 +33,7 @@ class ConfigWriter:
         self.path = path
 
 
-    def can_change_config(self) -> None:
+    def is_secret_valid(self, master_key: str) -> None:
         # IF: Secret is None
         # IF: Secret is wrong
         pass

@@ -11,7 +11,6 @@ def setup(args) -> None:
 
     try:
         writer = ConfigWriter(args.config)
-        writer.can_change_config()
 
         writer.add_target(target)
 

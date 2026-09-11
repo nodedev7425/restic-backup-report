@@ -51,9 +51,11 @@ def generate(args) -> None:
 def add(args) -> None:
     try:
         writer = ConfigWriter(args.config)
-        writer.can_change_config()
-
         master_key = get_master_key()
+
+        if writer.is_secret_valid(master_key): # type: ignore
+            raise MasterKeyError("Invalid master key")
+
         name = request_attribute("repository name", InputType.TEXT)
         path = request_attribute("repository path", InputType.DIRECTORY)
         password = request_attribute("repository password", InputType.PASSWORD)
