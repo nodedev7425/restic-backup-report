@@ -8,10 +8,10 @@ argparse = "*"
 cerberus = "*"
 questionary = "*"
 rich = "*"
-pyyaml = "*"
 argon2-cffi = "*"
 cryptography = "*"
 jinja2 = "*"
+"ruamel.yaml" = "*"
 
 [dev-packages]
 

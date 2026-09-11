@@ -3,7 +3,7 @@ import tempfile
 
 import questionary
 
-from restic_backup_report.__main__ import RESTIC_BACKUP_REPORT_MASTER_KEY
+from restic_backup_report.env import MasterKeyError, get_master_key
 
 from restic_backup_report.utils.config_writer import ConfigValidationError, ConfigWriter
 
@@ -53,19 +53,24 @@ def add(args) -> None:
         writer = ConfigWriter(args.config)
         writer.can_change_config()
 
+        master_key = get_master_key()
         name = request_attribute("repository name", InputType.TEXT)
         path = request_attribute("repository path", InputType.DIRECTORY)
         password = request_attribute("repository password", InputType.PASSWORD)
-        report = request_attribute("repository name", InputType.SELECT, [])
-        frequency = request_attribute("repository name", InputType.SELECT, [])
-        tolerance = request_attribute("repository name", InputType.INTEGER)
+        report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
+        frequency = request_attribute("backup frequency", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
+        tolerance = request_attribute("backup tolerance", InputType.INTEGER)
 
         writer.add_repository(
-            RESTIC_BACKUP_REPORT_MASTER_KEY, 
+            master_key,  # type: ignore
             name, path, password, report, frequency, tolerance
         )
 
     except ConfigValidationError as e:
+        print_error(
+            f"\n{e}"
+        ) 
+    except MasterKeyError as e:
         print_error(
             f"\n{e}"
         ) 

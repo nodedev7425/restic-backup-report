@@ -1,7 +1,8 @@
 import base64
 import os
-import yaml
 import secrets
+
+from ruamel.yaml import YAML
 
 from argon2 import PasswordHasher
 
@@ -65,7 +66,7 @@ class ConfigWriter:
         report: str, frequency: str, tolerance: int):
 
         nonce = os.urandom(12)
-        aesgcm = AESGCM(master_key.encode())
+        aesgcm = AESGCM(bytes.fromhex(master_key))
 
         encrypted_password = aesgcm.encrypt(
             nonce,
@@ -83,25 +84,27 @@ class ConfigWriter:
             "backup_tolerance": tolerance
         }
 
-        rendered = repository_template.render(**data)
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096
 
-        repository = yaml.safe_load(rendered)
+        rendered = repository_template.render(**data)
+        repository = yaml.load(rendered)
 
         with open(self.path, "r", encoding="utf-8") as f:
-            config = yaml.safe_load(f) or {}
+            config = yaml.load(f)
+
+        if config is None:
+            config = {}
 
         if "repositories" not in config:
             config["repositories"] = []
-
         config["repositories"].append(repository)
 
         with open(self.path, "w", encoding="utf-8") as f:
-            yaml.safe_dump(
-                config,
-                f,
-                default_flow_style=False,
-                sort_keys=False,
-            )
+            yaml.dump(config, f)
+
 
     def add_target(self, target: Target) -> None:
         pass
