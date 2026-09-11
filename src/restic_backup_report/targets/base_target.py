@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from restic_backup_report.types import is_directory, is_integer
 from restic_backup_report.utils.console import InputType, request_attribute
@@ -30,6 +31,11 @@ class Target(ABC):
     def _create(self, inputs: dict) -> None:
         raise NotImplementedError
 
+
+    @abstractmethod
+    def send(self, *args: Any) -> None:
+        raise NotImplementedError
+    
 
     @abstractmethod
     def to_yaml(self) -> dict:
