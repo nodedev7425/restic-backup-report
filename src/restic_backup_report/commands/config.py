@@ -57,6 +57,10 @@ def add(args) -> None:
             raise MasterKeyError("Invalid master key")
 
         name = request_attribute("repository name", InputType.TEXT)
+
+        if writer.has_repository(name):
+            raise ConfigValidationError("Repository already exists")
+
         path = request_attribute("repository path", InputType.DIRECTORY)
         password = request_attribute("repository password", InputType.PASSWORD)
         report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])

@@ -33,6 +33,11 @@ class ConfigWriter:
         self.path = path
 
 
+    """
+        Global
+    """    
+
+
     def is_secret_valid(self, master_key: str) -> None:
         # IF: Secret is None
         # IF: Secret is wrong
@@ -60,9 +65,18 @@ class ConfigWriter:
             f.write(rendered)
 
         return master_key
-    
 
-    def add_repository(self, master_key: str, name:str, path: str, password: str,
+
+    """
+        Repository
+    """    
+
+
+    def has_repository(self, name: str) -> bool:
+        return False
+
+
+    def add_repository(self, master_key: str, name: str, path: str, password: str,
         report: str, frequency: str, tolerance: int):
 
         nonce = os.urandom(12)
@@ -106,7 +120,11 @@ class ConfigWriter:
             yaml.dump(config, f)
 
 
-    def add_target(self, target: Target) -> None:
+    """
+        Target
+    """    
+
+    def add_target(self, target: Target, master_key: str = "") -> None:
         pass
 
 
