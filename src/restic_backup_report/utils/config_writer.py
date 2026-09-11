@@ -185,7 +185,16 @@ class ConfigWriter:
 
 
     def get_target(self, name: str) -> Target:
-        pass
 
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096
+
+        with open(self.path, "r", encoding="utf-8") as f:
+            config = yaml.load(f)
+        
+        if "targets" not in config:
+            raise
 
     
