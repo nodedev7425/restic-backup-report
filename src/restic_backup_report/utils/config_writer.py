@@ -184,4 +184,8 @@ class ConfigWriter:
             yaml.dump(config, f)
 
 
+    def get_target(self, name: str) -> Target:
+        pass
+
+
     
