@@ -8,7 +8,7 @@ from .utils.restic import ResticManager
 from .targets.base_target import TargetTypeRegister
 from .formats.base_format import FormatRegister
 
-from .cli import register_cmds
+from .cli import run_cli
 
 from .targets.file_target import FileTarget
 
@@ -33,9 +33,7 @@ def main() -> int:
         "file": FileTarget
     })
 
-    register_cmds()
-
-    return 0
+    return run_cli()
 
 
 if __name__ == "__main__":

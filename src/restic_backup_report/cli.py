@@ -76,7 +76,8 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     )
 
     report_parser.add_argument(
-        '--silent'
+        '--silent',
+        action='store_true'
     )
 
     ## Command: target
@@ -113,12 +114,14 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     return parser.parse_args()
 
 
-def register_cmds():
-
+def run_cli() -> int:
     parser = argparse.ArgumentParser(
         prog="restic-backup-report",
-        description="Monitoring and reporting tool for Restic backups."
+        description="Monitoring and reporting tool for Restic backups.",
     )
 
-    args = parse_args(parser)
-    args.func(args)
+    try:
+        args = parse_args(parser)
+        return args.func(args) or 0
+    except Exception:
+        return 1
