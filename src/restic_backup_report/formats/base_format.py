@@ -1,9 +1,11 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 
 class Format(ABC):
 
-    pass
+    @abstractmethod
+    def repository_report(self):
+        pass
 
 
 class FormatRegister():

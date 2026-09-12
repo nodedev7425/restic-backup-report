@@ -14,9 +14,9 @@ from restic_backup_report.utils.filesystem import is_writable
 
 from restic_backup_report.targets.base_target import Target, TargetTypeRegister
 
-from restic_backup_report.templates.config_template import template as config_template
-from restic_backup_report.templates.repository_template import template as repository_template
-from restic_backup_report.templates.target_base_template import template as target_base_template
+from src.restic_backup_report.templates.config.config_template import template as config_template
+from src.restic_backup_report.templates.config.repository_template import template as repository_template
+from src.restic_backup_report.templates.config.target_base_template import template as target_base_template
 
 from restic_backup_report.utils.yaml import find_item, get_nested, get_parent, set_nested
 from src.restic_backup_report.utils.restic import Repository
