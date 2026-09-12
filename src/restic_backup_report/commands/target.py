@@ -14,7 +14,7 @@ def setup(args) -> None:
     try:
         writer = ConfigWriter(args.config)
 
-        if len(target.encrypted_fields()) > 0:
+        if len(target_type.encrypted_fields()) > 0:
             master_key = get_master_key()
             writer.is_secret_valid(master_key) # type: ignore
         else:
