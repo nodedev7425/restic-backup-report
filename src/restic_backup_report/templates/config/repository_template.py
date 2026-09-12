@@ -1,5 +1,6 @@
 from jinja2 import Template
 
+
 template: Template = Template("""
 name: {{ repository_name }}
 path: {{ repository_path }}
