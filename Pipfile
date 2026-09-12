@@ -12,6 +12,7 @@ argon2-cffi = "*"
 cryptography = "*"
 jinja2 = "*"
 "ruamel.yaml" = "*"
+packaging = "*"
 
 [dev-packages]
 
