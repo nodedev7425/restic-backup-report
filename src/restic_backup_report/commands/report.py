@@ -1,5 +1,8 @@
 import threading
 import time
+from typing import Text
+
+from rich.progress import BarColumn, Progress, TaskProgressColumn, Live, Group
 
 from src.restic_backup_report.env import get_master_key
 from src.restic_backup_report.utils.config_writer import ConfigWriter
@@ -30,12 +33,29 @@ def report(args) -> None:
             daemon=True,
         )
         reporter_thread.start()
+            
+        if not args.silent:
+            status = Text("Starting...")
 
-        while not reporter.done.is_set():
-            if not args.silent:
-                print("verbose")
+            progress = Progress(
+                BarColumn(),
+                TaskProgressColumn(),
+            )
 
-            time.sleep(0.1)
+            task = progress.add_task(
+                "Report",
+                total=len(repositories),
+            )
+
+            with Live(
+                Group(status, progress),
+                refresh_per_second=10,
+            ):
+                while not reporter.done.wait(0.1):
+                    pass
+
+        else:
+            reporter.done.wait()
 
         reporter_thread.join()
         
