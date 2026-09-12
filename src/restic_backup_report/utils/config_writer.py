@@ -19,6 +19,7 @@ from restic_backup_report.templates.repository_template import template as repos
 from restic_backup_report.templates.target_base_template import template as target_base_template
 
 from restic_backup_report.utils.yaml import find_item, get_nested, get_parent, set_nested
+from src.restic_backup_report.utils.restic import Repository
 
 
 class ConfigValidationError(Exception):
@@ -123,6 +124,10 @@ class ConfigWriter:
             yaml.dump(config, f)
 
 
+    def get_all_repositories(self, master_key: str) -> list[Repository]:
+        pass
+
+
     """
         Target
     """    
@@ -132,7 +137,7 @@ class ConfigWriter:
         return False
 
 
-    def add_target(self, target: Target, master_key: str | None) -> None:
+    def add_target(self, target: Target, master_key: str) -> None:
 
         encrypted_fields = target.type.encrypted_fields()
         

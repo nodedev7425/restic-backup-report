@@ -75,6 +75,10 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
         required=True
     )
 
+    report_parser.add_argument(
+        '--silent'
+    )
+
     ## Command: target
 
     target_parser = subparsers.add_parser("target")
