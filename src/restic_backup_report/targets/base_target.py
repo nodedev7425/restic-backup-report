@@ -31,8 +31,9 @@ class Target(ABC):
 
 
     @abstractmethod
-    def _create(self, inputs: dict) -> None:
-        raise NotImplementedError
+    def _create(self, definition: dict) -> None:
+        self.name = definition["name"]
+        self.type = type(self)
 
 
     @abstractmethod
@@ -41,7 +42,7 @@ class Target(ABC):
 
 
     @abstractmethod
-    def encrypted_fields(self) -> dict[str, str]:   # field name, yaml path
+    def encrypted_fields() -> dict[str, str]:   # field name, yaml path
         raise NotImplementedError
 
 

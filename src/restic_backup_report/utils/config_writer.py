@@ -18,7 +18,7 @@ from restic_backup_report.templates.config_template import template as config_te
 from restic_backup_report.templates.repository_template import template as repository_template
 from restic_backup_report.templates.target_base_template import template as target_base_template
 
-from restic_backup_report.utils.yaml import get_nested, get_parent, set_nested
+from restic_backup_report.utils.yaml import find_item, get_nested, get_parent, set_nested
 
 
 class ConfigValidationError(Exception):
@@ -184,7 +184,7 @@ class ConfigWriter:
             yaml.dump(config, f)
 
 
-    def get_target(self, name: str) -> Target:
+    def get_target(self, name: str, master_key: str | None) -> Target:
 
         yaml = YAML()
         yaml.preserve_quotes = True
@@ -195,6 +195,35 @@ class ConfigWriter:
             config = yaml.load(f)
         
         if "targets" not in config:
-            raise
+            raise ConfigValidationError("No targets defined")
+
+        yaml_target = find_item(
+            config["targets"], "name", name
+        )
+
+        if yaml_target is None:
+            raise KeyError(f"No target with the name '{name}' found")
+
+        if not TargetTypeRegister.has(yaml_target["type"]):
+            raise ConfigValidationError("Target type is unknown")
+        target_type = TargetTypeRegister.get(yaml_target["type"])
+
+        encrypted_fields = target_type.encrypted_fields()
+
+        for yaml_key in encrypted_fields.values():
+
+            parent, field = get_parent(yaml_target, yaml_key)
+
+            cypertext = parent[field]
+            nonce = parent[f"{field}_nonce"]
+
+            aesgcm = AESGCM(bytes.fromhex(master_key))
+
+            parent[field] = aesgcm.decrypt(nonce, cypertext)
+
+        return target_type(yaml_target)
+
+
+        
 
     

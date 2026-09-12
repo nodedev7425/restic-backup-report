@@ -15,8 +15,10 @@ class FileTarget(Target):
         )
 
     
-    def _create(self, inputs: dict) -> None:
-        self.path = inputs["path"]
+    def _create(self, definition: dict) -> None:
+        super()._create(definition)
+
+        self.path = definition["config"]["path"]
 
 
     def validator_schema(self) -> dict:
@@ -32,7 +34,7 @@ class FileTarget(Target):
         print("send")
 
 
-    def encrypted_fields(self) -> dict[str, str]:
+    def encrypted_fields() -> dict[str, str]:
         return {}        
 
 
