@@ -64,6 +64,11 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     report_parser.set_defaults(func=report)
 
     report_parser.add_argument(
+        "report_type",
+        choices=["quick", "full"]
+    )
+
+    report_parser.add_argument(
         '-c', '--config',
         type=file_path,
         required=True
