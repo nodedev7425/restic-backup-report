@@ -125,7 +125,39 @@ class ConfigWriter:
 
 
     def get_all_repositories(self, master_key: str) -> list[Repository]:
-        pass
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096
+
+        with open(self.path, "r", encoding="utf-8") as f:
+            config = yaml.load(f)
+        
+        if "repositories" not in config:
+            raise ConfigValidationError("No repositories defined")
+
+        repositories = list[Repository]()
+        for repository in config["repositories"]:
+
+            aesgcm = AESGCM(bytes.fromhex(master_key))
+            nonce = repository["password_nonce"]
+
+            repositories.append(
+                Repository(
+                    name=repository["name"],
+                    path=repository["path"],
+                    password=aesgcm.decrypt(
+                        nonce, 
+                        repository["password"]
+                    ),
+                    report=repository["report"],
+                    frequency=repository["backup"]["frequency"],
+                    tolerance=repository["backup"]["tolerance"]
+                )
+            )
+
+        return repositories
 
 
     """

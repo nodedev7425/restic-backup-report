@@ -1,3 +1,4 @@
+from enum import Enum, auto
 import subprocess
 import shutil
 
@@ -10,13 +11,52 @@ class ResticError(Exception):
     pass
 
 
+class ReportType(Enum):
+    DAILY = auto()
+    WEEKLY = auto()
+    MONTHLY = auto()
+    YEARLY = auto()
+
+
+class BackupFrequency(ReportType):
+    pass
+
+
 class Repository:
 
 
-    def __init__(self, name: str, path: str, password: str):
-        self.name = name
-        self.path = path
-        self.password = password
+    def __init__(self, name: str, path: str, password: str, report: ReportType, frequency: BackupFrequency, tolerance: int):
+        self.__name = name
+        self.__path = path
+        self.__password = password
+
+        self.__report = report
+        self.__frequency = frequency
+        self.__tolerance = tolerance
+
+
+    def get_name(self):
+        return self.__name
+
+
+    def get_path(self):
+        return self.__path
+
+
+    def get_password(self):
+        return self.__password
+
+
+    def get_report(self):
+        return self.__report
+
+
+    def get_frequency(self):
+        return self.__frequency
+
+
+    def get_tolerance(self):
+        return self.__tolerance
 
 
 class ResticManager:
