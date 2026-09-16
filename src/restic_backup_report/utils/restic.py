@@ -18,8 +18,11 @@ class ReportType(Enum):
     YEARLY = auto()
 
 
-class BackupFrequency(ReportType):
-    pass
+class BackupFrequency(Enum):
+    DAILY = auto()
+    WEEKLY = auto()
+    MONTHLY = auto()
+    YEARLY = auto()
 
 
 class Repository:

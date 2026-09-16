@@ -23,7 +23,7 @@ def setup(args) -> None:
         if writer.has_target(target.name):
             raise ConfigValidationError("Target already exists")
 
-        writer.add_target(target, master_key)
+        writer.add_target(target, master_key) # type: ignore
 
     except PermissionError as e:
         print_error(e.args[0])
