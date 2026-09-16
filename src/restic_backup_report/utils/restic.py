@@ -93,3 +93,8 @@ class ResticManager:
     @staticmethod
     def is_repo_compatible(repo: Repository) -> bool:
         pass
+
+
+    @staticmethod
+    def check_repo_integrity(repo: Repository, full = False) -> bool:
+        pass
