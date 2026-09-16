@@ -20,7 +20,9 @@ class Reporter:
 
     def run(self):
         try:
-            pass
+            for repository in self.repos:
+                pass
+
         finally:
             self.done.set()
 
