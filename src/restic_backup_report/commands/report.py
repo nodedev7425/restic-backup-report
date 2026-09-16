@@ -21,7 +21,7 @@ def report(args) -> None:
                 writer.get_target(target, master_key)
             )
 
-        repositories = writer.get_all_repositories(master_key)
+        repositories = writer.get_all_repositories(master_key) # type: ignore
 
         if len(repositories) > 0:
             raise ValueError("No repositories in config found")
