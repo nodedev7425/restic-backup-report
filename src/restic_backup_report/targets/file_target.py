@@ -36,7 +36,7 @@ class FileTarget(Target):
 
         print("send")
 
-
+    @staticmethod
     def encrypted_fields() -> dict[str, str]:
         return {}        
 
