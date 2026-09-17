@@ -37,6 +37,7 @@ class FileTarget(Target):
         with open(self.path, 'a') as f:
             f.write(report.parse())
 
+
     @staticmethod
     def encrypted_fields() -> dict[str, str]:
         return {}        
