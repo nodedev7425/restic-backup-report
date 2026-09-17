@@ -1,7 +1,10 @@
 from queue import Empty, Queue
 import threading
 
-from rich.progress import BarColumn, Progress, TaskID, TaskProgressColumn, Text, Live, Group
+from rich.progress import BarColumn, Progress, TaskID, TaskProgressColumn
+from rich.live import Live
+from rich.console import Group
+from rich.text import Text
 
 from src.restic_backup_report.env import get_master_key
 from src.restic_backup_report.utils.config_writer import ConfigWriter
