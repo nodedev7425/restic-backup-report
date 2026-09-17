@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from restic_backup_report.utils.restic import Repository, RepositoryIntegrity
+from restic_backup_report.utils.restic import Repository
 
 
 class Report(ABC):
