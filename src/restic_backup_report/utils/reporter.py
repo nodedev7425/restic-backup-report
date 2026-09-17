@@ -1,3 +1,4 @@
+from queue import Queue
 import threading
 
 from restic_backup_report.report.base_report import Report
@@ -8,12 +9,20 @@ from restic_backup_report.utils.restic import Repository, ResticManager
 class Reporter:
 
 
-    def __init__(self, repos: list[Repository], targets: list[Target]):
+    def __init__(self, repos: list[Repository], targets: list[Target], log_queue: Queue[str] | None):
         self.repos = repos
         self.targets = targets
 
         self.reports: dict[type[Report], Report] = {}
         self.done = threading.Event()
+
+        
+
+        self.__prepare_progress_reporting()
+
+
+    def __prepare_progress_reporting(self):
+        pass
 
 
     def run(self):

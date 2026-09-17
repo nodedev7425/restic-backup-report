@@ -1,13 +1,23 @@
+from queue import Empty, Queue
 import threading
-import time
-from typing import Text
 
-from rich.progress import BarColumn, Progress, TaskProgressColumn, Live, Group
+from rich.progress import BarColumn, Progress, TaskProgressColumn, Text, Live, Group
 
 from src.restic_backup_report.env import get_master_key
 from src.restic_backup_report.utils.config_writer import ConfigWriter
 from src.restic_backup_report.utils.console import print_error
 from src.restic_backup_report.utils.reporter import Reporter
+
+
+def _process_events(log_queue: Queue[str], status: Text, progress: Progress, task: int) -> None:
+    while True:
+        try:
+            message = log_queue.get_nowait()
+        except Empty:
+            break
+
+        status.plain = message
+        progress.advance(task)
 
 
 def report(args) -> None:
@@ -23,10 +33,14 @@ def report(args) -> None:
 
         repositories = writer.get_all_repositories(master_key) # type: ignore
 
-        if len(repositories) > 0:
+        if len(repositories) == 0:
             raise ValueError("No repositories in config found")
 
-        reporter = Reporter(repositories, targets)
+        log_queue: Queue[str] | None = (
+            Queue() if not args.silent else None
+        )
+
+        reporter = Reporter(repositories, targets, log_queue)
 
         reporter_thread = threading.Thread(
             target=reporter.run,
@@ -52,8 +66,19 @@ def report(args) -> None:
                 refresh_per_second=10,
             ):
                 while not reporter.done.wait(0.1):
-                    pass
+                    _process_events(
+                        log_queue, # type: ignore
+                        status,
+                        progress,
+                        task,
+                    )
 
+                _process_events(
+                    log_queue, # type: ignore
+                    status,
+                    progress,
+                    task,
+                )
         else:
             reporter.done.wait()
 
