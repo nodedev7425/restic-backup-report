@@ -38,6 +38,34 @@ class ConfigWriter:
         self.path = path
 
 
+    def _encrypt(self, value: str, master_key: str) -> tuple[str, str]:
+        aesgcm = AESGCM(bytes.fromhex(master_key))
+        nonce = os.urandom(12)
+
+        ciphertext = aesgcm.encrypt(
+            nonce,
+            value.encode("utf-8"),
+            None,
+        )
+
+        return (
+            base64.b64encode(ciphertext).decode("ascii"),
+            base64.b64encode(nonce).decode("ascii"),
+        )
+
+
+    def _decrypt(self, ciphertext: str, nonce: str, master_key: str,) -> str:
+        aesgcm = AESGCM(bytes.fromhex(master_key))
+
+        plaintext = aesgcm.decrypt(
+            base64.b64decode(nonce),
+            base64.b64decode(ciphertext),
+            None,
+        )
+
+        return plaintext.decode("utf-8")
+
+
     """
         Global
     """    
@@ -87,17 +115,16 @@ class ConfigWriter:
         nonce = os.urandom(12)
         aesgcm = AESGCM(bytes.fromhex(master_key))
 
-        encrypted_password = aesgcm.encrypt(
-            nonce,
-            password.encode("utf-8"),
-            None,
+        encrypted_password, password_nonce = self._encrypt(
+            password,
+            master_key,
         )
 
         data = {
             "repository_name": name,
             "repository_path": path,
-            "repository_password": base64.b64encode(encrypted_password).decode("ascii"),
-            "repository_password_nonce": base64.b64encode(nonce).decode("ascii"),
+            "repository_password": encrypted_password,
+            "repository_password_nonce": password_nonce,
             "report_interval": report,
             "backup_frequency": frequency,
             "backup_tolerance": tolerance
@@ -141,16 +168,14 @@ class ConfigWriter:
         repositories = list[Repository]()
         for repository in config["repositories"]:
 
-            aesgcm = AESGCM(bytes.fromhex(master_key))
-            nonce = repository["password_nonce"]
-
             repositories.append(
                 Repository(
                     name=repository["name"],
                     path=repository["path"],
-                    password=aesgcm.decrypt(
-                        nonce, 
-                        repository["password"]
+                    password=self._decrypt(
+                        repository["password"],
+                        repository["password_nonce"],
+                        master_key
                     ),
                     report=repository["report"],
                     frequency=repository["backup"]["frequency"],
@@ -172,7 +197,7 @@ class ConfigWriter:
 
     def add_target(self, target: Target, master_key: str) -> None:
 
-        encrypted_fields = target.type.encrypted_fields()
+        encrypted_fields = target.type.encrypted_fields() # type: ignore
         
         data = {
             "target_name": target.name,
@@ -194,17 +219,15 @@ class ConfigWriter:
 
             parent, field = get_parent(target_config, yaml_key)
 
-            aesgcm = AESGCM(bytes.fromhex(master_key)) # type: ignore
             nonce = os.urandom(12)
 
-            encrypted_value = aesgcm.encrypt(
-                nonce,
-                parent[field].encode("utf-8"),
-                None,
+            encrypted_value, nonce = self._encrypt(
+                target_config[yaml_key],
+                master_key
             )
 
-            parent[f"{field}_nonce"] = nonce
-            parent[field] = encrypted_value
+            parent[f"{field}_nonce"] = encrypted_value
+            parent[field] = nonce
 
         target_root["config"] = target_config
 
@@ -222,7 +245,7 @@ class ConfigWriter:
             yaml.dump(config, f)
 
 
-    def get_target(self, name: str, master_key: str | None) -> Target:
+    def get_target(self, name: str, master_key: str) -> Target:
 
         yaml = YAML()
         yaml.preserve_quotes = True
@@ -246,18 +269,17 @@ class ConfigWriter:
             raise ConfigValidationError("Target type is unknown")
         target_type = TargetTypeRegister.get(yaml_target["type"])
 
-        encrypted_fields = target_type.encrypted_fields()
+        encrypted_fields = target_type.encrypted_fields() # type: ignore
 
         for yaml_key in encrypted_fields.values():
 
             parent, field = get_parent(yaml_target, yaml_key)
 
-            cypertext = parent[field]
-            nonce = parent[f"{field}_nonce"]
-
-            aesgcm = AESGCM(bytes.fromhex(master_key))
-
-            parent[field] = aesgcm.decrypt(nonce, cypertext)
+            parent[field] = self._decrypt(
+                parent[field], 
+                parent[f"{field}_nonce"], 
+                master_key
+            )
 
         return target_type(yaml_target)
 

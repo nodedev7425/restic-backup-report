@@ -28,7 +28,7 @@ def report(args) -> None:
         targets = []
         for target in args.target:
             targets.append(
-                writer.get_target(target, master_key)
+                writer.get_target(target, master_key) # type: ignore
             )
 
         repositories = writer.get_all_repositories(master_key) # type: ignore
