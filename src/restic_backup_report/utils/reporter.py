@@ -43,7 +43,8 @@ class Reporter:
                     continue
 
                 integrity = ResticManager.check_repo_integrity(repository)
-                report.set_repository_integrity(repository.get_name(), integrity)
+                for report in self.reports.values():
+                    report.set_repository_integrity(repository.get_name(), integrity)
                 
                 if integrity:
                     for report in self.reports.values():
