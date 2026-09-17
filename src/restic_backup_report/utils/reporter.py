@@ -21,8 +21,9 @@ class Reporter:
         self.__prepare_progress_reporting()
 
 
-    def __prepare_progress_reporting(self):
-        pass
+    def __prepare_progress_reporting(self) -> float:
+
+        return 1.0
 
 
     def run(self):

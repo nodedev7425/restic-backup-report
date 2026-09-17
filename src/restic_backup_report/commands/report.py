@@ -74,6 +74,7 @@ def report(args) -> None:
                         status,
                         progress,
                         task,
+                        1.0
                     )
 
                 _process_events(
@@ -81,6 +82,7 @@ def report(args) -> None:
                     status,
                     progress,
                     task,
+                    1.0
                 )
         else:
             reporter.done.wait()
