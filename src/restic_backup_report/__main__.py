@@ -1,18 +1,18 @@
 import os
 import sys
 
+from restic_backup_report.report.base_report import ReportFormatRegister
+from restic_backup_report.report.plaintext_report import PlaintextFormat
+
 from .app_info import RESTIC_CLI_MIN_VERSION
 
 from .utils.restic import ResticManager
 
 from .targets.base_target import TargetTypeRegister
-from .formats.base_format import FormatRegister
 
 from .cli import run_cli
 
 from .targets.file_target import FileTarget
-
-from .formats.plaintext_format import PlaintextFormat
 
 from .utils.console import print_error
 
@@ -25,7 +25,7 @@ def main() -> int:
         )
         return 1
 
-    FormatRegister.register_formats({
+    ReportFormatRegister.register_formats({
         "plaintext": PlaintextFormat
     })
 

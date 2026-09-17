@@ -25,6 +25,10 @@ class BackupFrequency(Enum):
     YEARLY = auto()
 
 
+class RepositoryIntegrity(Enum):
+    pass
+
+
 class Repository:
 
 

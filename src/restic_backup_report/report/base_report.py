@@ -1,21 +1,41 @@
 from abc import ABC, abstractmethod
 
+from restic_backup_report.utils.restic import Repository, RepositoryIntegrity
 
-class Format(ABC):
+
+class Report(ABC):
+
+
+    def __init__(self) -> None:
+        super().__init__()
+
 
     @abstractmethod
-    def repository_report(self):
+    def append_repository(self, repo: Repository) -> None:
         pass
 
 
-class FormatRegister():
+    def set_repository_incompatible(self, repo_name: str) -> None:
+        pass
+    
+
+    def set_repository_integrity(self, repo_name: str, status: bool) -> None:
+        pass
 
 
-    _formats: dict[str, type[Format]] = {}
+    @abstractmethod
+    def parse(self) -> None:
+        pass
+
+
+class ReportFormatRegister():
+
+
+    _formats: dict[str, type[Report]] = {}
     
     
     @classmethod
-    def register(cls, name: str, format: type[Format]) -> None:
+    def register(cls, name: str, format: type[Report]) -> None:
         if name in cls._formats:
             raise ValueError(f"Format '{name}' is already registered")
 
@@ -28,13 +48,13 @@ class FormatRegister():
 
 
     @classmethod
-    def register_formats(cls, formats: dict[str, type[Format]]):
+    def register_formats(cls, formats: dict[str, type[Report]]):
         for key in formats.keys():
             cls.register(key, formats[key])
 
 
     @classmethod
-    def get(cls, name: str) -> type[Format]:
+    def get(cls, name: str) -> type[Report]:
         try:
             return cls._formats[name]
         except KeyError:
@@ -42,7 +62,7 @@ class FormatRegister():
 
 
     @classmethod
-    def get_name(cls, format: type[Format]) -> str:
+    def get_name(cls, format: type[Report]) -> str:
         for name, registered_target in cls._formats.items():
             if registered_target is format:
                 return name

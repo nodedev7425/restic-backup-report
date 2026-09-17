@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from restic_backup_report.app_info import CONFIG_STANDARD
 
+from restic_backup_report.report.base_report import ReportFormatRegister
 from restic_backup_report.utils.filesystem import is_writable
 
 from restic_backup_report.targets.base_target import Target, TargetTypeRegister
@@ -176,7 +177,7 @@ class ConfigWriter:
         data = {
             "target_name": target.name,
             "target_type": TargetTypeRegister.get_name(target.type),
-            "target_format": "<placeholder>",
+            "target_format": ReportFormatRegister.get_name(target.format),
         }
 
         yaml = YAML()

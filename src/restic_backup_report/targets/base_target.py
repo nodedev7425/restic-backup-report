@@ -4,6 +4,7 @@ from typing import Any
 
 from ruamel.yaml import YAML
 
+from restic_backup_report.report.base_report import ReportFormatRegister
 from restic_backup_report.types import is_directory, is_integer
 from restic_backup_report.utils.console import InputType, request_attribute
 from restic_backup_report.utils.filesystem import is_writable  
@@ -27,12 +28,16 @@ class Target(ABC):
     @abstractmethod
     def _inputs(self) -> None:
         self.name = request_attribute("name", InputType.TEXT)
+        self.format = ReportFormatRegister.get(
+            request_attribute("format", InputType.SELECT, ReportFormatRegister.names())
+        )
         self.type = type(self)
 
 
     @abstractmethod
     def _create(self, definition: dict) -> None:
         self.name = definition["name"]
+        self.format = ReportFormatRegister.get(definition["format"])
         self.type = type(self)
 
 
