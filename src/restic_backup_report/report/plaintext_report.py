@@ -1,8 +1,8 @@
-from restic_backup_report.formats.base_format import Format
+from restic_backup_report.report.base_report import Report
 
 
-class PlaintextFormat(Format):
+class PlaintextReport(Report):
 
 
-    def repository_report(self):
-        pass
+    def parse(self) -> str:
+            return "Test"

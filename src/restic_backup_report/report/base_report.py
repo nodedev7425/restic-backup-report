@@ -10,7 +10,6 @@ class Report(ABC):
         super().__init__()
 
 
-    @abstractmethod
     def append_repository(self, repo: Repository) -> None:
         pass
 
@@ -24,7 +23,7 @@ class Report(ABC):
 
 
     @abstractmethod
-    def parse(self) -> None:
+    def parse(self) -> str:
         pass
 
 

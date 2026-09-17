@@ -34,7 +34,8 @@ class FileTarget(Target):
     def send(self, report: Report) -> None:
         super().send(report)
 
-        print("send")
+        with open(self.path, 'a') as f:
+            f.write(report.parse())
 
     @staticmethod
     def encrypted_fields() -> dict[str, str]:

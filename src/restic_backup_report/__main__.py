@@ -2,7 +2,7 @@ import os
 import sys
 
 from restic_backup_report.report.base_report import ReportFormatRegister
-from restic_backup_report.report.plaintext_report import PlaintextFormat
+from restic_backup_report.report.plaintext_report import PlaintextReport
 
 from .app_info import RESTIC_CLI_MIN_VERSION
 
@@ -26,7 +26,7 @@ def main() -> int:
         return 1
 
     ReportFormatRegister.register_formats({
-        "plaintext": PlaintextFormat
+        "plaintext": PlaintextReport
     })
 
     TargetTypeRegister.register_targets({
