@@ -1,7 +1,7 @@
 from queue import Empty, Queue
 import threading
 
-from rich.progress import BarColumn, Progress, TaskProgressColumn, Text, Live, Group
+from rich.progress import BarColumn, Progress, TaskID, TaskProgressColumn, Text, Live, Group
 
 from src.restic_backup_report.env import get_master_key
 from src.restic_backup_report.utils.config_writer import ConfigWriter
@@ -9,7 +9,7 @@ from src.restic_backup_report.utils.console import print_error
 from src.restic_backup_report.utils.reporter import Reporter
 
 
-def _process_events(log_queue: Queue[str], status: Text, progress: Progress, task: int) -> None:
+def _process_events(log_queue: Queue[str], status: Text, progress: Progress, task: TaskID) -> None:
     while True:
         try:
             message = log_queue.get_nowait()
