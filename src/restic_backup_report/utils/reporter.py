@@ -16,7 +16,7 @@ class Reporter:
         self.reports: dict[type[Report], Report] = {}
         self.done = threading.Event()
 
-        
+        self.log_queue = log_queue
 
         self.__prepare_progress_reporting()
 
@@ -27,10 +27,14 @@ class Reporter:
 
     def run(self):
         try:
+            # Create reports
+
             for target in self.targets:
                 format = target.format
                 if not format in self.reports.keys():
                     self.reports[format] = format()
+
+            # Fill reports
 
             for repository in self.repos:
 
@@ -49,6 +53,11 @@ class Reporter:
                 if integrity:
                     for report in self.reports.values():
                         pass
+
+                #  Send reports
+
+                for target in self.targets:
+                    target.send(self.reports[target.format])
         finally:
             self.done.set()
 

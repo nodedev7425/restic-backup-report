@@ -1,3 +1,4 @@
+from restic_backup_report.report.base_report import Report
 from restic_backup_report.utils.console import request_attribute
 
 from .base_target import Target, InputType
@@ -30,7 +31,9 @@ class FileTarget(Target):
         }
 
 
-    def send(self) -> None:
+    def send(self, report: Report) -> None:
+        super().send(report)
+
         print("send")
 
 

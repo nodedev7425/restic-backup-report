@@ -12,7 +12,7 @@ from src.restic_backup_report.utils.console import print_error
 from src.restic_backup_report.utils.reporter import Reporter
 
 
-def _process_events(log_queue: Queue[str], status: Text, progress: Progress, task: TaskID) -> None:
+def _process_events(log_queue: Queue[str], status: Text, progress_bar: Progress, task: TaskID, progress: float) -> None:
     while True:
         try:
             message = log_queue.get_nowait()
@@ -20,7 +20,7 @@ def _process_events(log_queue: Queue[str], status: Text, progress: Progress, tas
             break
 
         status.plain = message
-        progress.advance(task)
+        progress_bar.advance(task, progress - progress_bar.tasks[task].completed)
 
 
 def report(args) -> None:

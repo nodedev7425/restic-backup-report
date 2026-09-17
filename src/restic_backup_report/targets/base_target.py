@@ -4,7 +4,7 @@ from typing import Any
 
 from ruamel.yaml import YAML
 
-from restic_backup_report.report.base_report import ReportFormatRegister
+from restic_backup_report.report.base_report import Report, ReportFormatRegister
 from restic_backup_report.types import is_directory, is_integer
 from restic_backup_report.utils.console import InputType, request_attribute
 from restic_backup_report.utils.filesystem import is_writable  
@@ -42,8 +42,10 @@ class Target(ABC):
 
 
     @abstractmethod
-    def send(self) -> None:
-        raise NotImplementedError
+    def send(self, report: Report) -> None:
+
+        if not type(report) is self.format:
+            raise TypeError("The report has wrong format") 
 
 
     @abstractmethod
