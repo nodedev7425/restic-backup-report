@@ -61,6 +61,7 @@ def add(args) -> None:
         if writer.has_repository(name):
             raise ConfigValidationError("Repository already exists")
 
+        display_name = request_attribute("display name", InputType.TEXT)
         path = request_attribute("repository path", InputType.DIRECTORY)
         password = request_attribute("repository password", InputType.PASSWORD)
         report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
@@ -69,7 +70,7 @@ def add(args) -> None:
 
         writer.add_repository(
             master_key,  # type: ignore
-            name, path, password, report, frequency, tolerance
+            name, display_name, path, password, report, frequency, tolerance
         )
 
     except ConfigValidationError as e:

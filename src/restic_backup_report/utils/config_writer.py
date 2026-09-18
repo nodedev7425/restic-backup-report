@@ -109,7 +109,7 @@ class ConfigWriter:
         return False
 
 
-    def add_repository(self, master_key: str, name: str, path: str, password: str,
+    def add_repository(self, master_key: str, name: str, display_name: str, path: str, password: str,
         report: str, frequency: str, tolerance: int):
 
         nonce = os.urandom(12)
@@ -122,6 +122,7 @@ class ConfigWriter:
 
         data = {
             "repository_name": name,
+            "repository_display_name": display_name,
             "repository_path": path,
             "repository_password": encrypted_password,
             "repository_password_nonce": password_nonce,
@@ -171,6 +172,7 @@ class ConfigWriter:
             repositories.append(
                 Repository(
                     name=repository["name"],
+                    display_name=repositories["display_name"],
                     path=repository["path"],
                     password=self._decrypt(
                         repository["password"],

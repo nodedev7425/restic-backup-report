@@ -28,8 +28,9 @@ class BackupFrequency(Enum):
 class Repository:
 
 
-    def __init__(self, name: str, path: str, password: str, report: ReportType, frequency: BackupFrequency, tolerance: int):
+    def __init__(self, name: str, display_name: str, path: str, password: str, report: ReportType, frequency: BackupFrequency, tolerance: int):
         self.__name = name
+        self.__display_name = display_name
         self.__path = path
         self.__password = password
 
@@ -40,6 +41,10 @@ class Repository:
 
     def get_name(self):
         return self.__name
+
+
+    def get_display_name(self):
+        return self.__display_name
 
 
     def get_path(self):

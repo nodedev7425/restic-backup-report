@@ -3,6 +3,7 @@ from jinja2 import Template
 
 template: Template = Template("""
 name: {{ repository_name }}
+display_name: {{ repository_display_name }}
 path: {{ repository_path }}
 password: {{ repository_password }}
 password_nonce: {{ repository_password_nonce }}
