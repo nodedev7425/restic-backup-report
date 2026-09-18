@@ -1,12 +1,14 @@
-from queue import Empty, Queue
 import threading
+import traceback
+
+from queue import Empty, Queue
 
 from rich.progress import BarColumn, Progress, TaskID, TaskProgressColumn
 from rich.live import Live
 from rich.console import Group
 from rich.text import Text
 
-from src.restic_backup_report.env import get_master_key
+from src.restic_backup_report.env import MasterKeyError, get_master_key
 from src.restic_backup_report.utils.config_writer import ConfigWriter
 from src.restic_backup_report.utils.console import print_error
 from src.restic_backup_report.utils.reporter import Reporter
@@ -92,6 +94,12 @@ def report(args) -> None:
     except ValueError as e:
         print_error(
             f"\n{e}"
+    )
+    except MasterKeyError as e:
+        print_error(
+            f"\n{e}"
         )
-    except Exception as e:
-        pass
+    except Exception:
+        print_error(
+            f"\n{traceback.format_exc()}"
+        )
