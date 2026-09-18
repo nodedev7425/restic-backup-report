@@ -1,4 +1,4 @@
-from restic_backup_report.report.base_report import Report
+from restic_backup_report.reports.base_report import Report
 from restic_backup_report.utils.console import request_attribute
 
 from .base_target import Target, InputType
@@ -35,7 +35,7 @@ class FileTarget(Target):
         super().send(report)
 
         with open(self.path, 'a') as f:
-            f.write(report.parse())
+            f.write(report.render())
 
 
     @staticmethod

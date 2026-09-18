@@ -4,7 +4,7 @@ from typing import Any
 
 from ruamel.yaml import YAML
 
-from restic_backup_report.report.base_report import Report, ReportFormatRegister
+from restic_backup_report.reports.base_report import Report, ReportFormatRegister
 from restic_backup_report.types import is_directory, is_integer
 from restic_backup_report.utils.console import InputType, request_attribute
 from restic_backup_report.utils.filesystem import is_writable  

@@ -1,7 +1,7 @@
 from queue import Queue
 import threading
 
-from restic_backup_report.report.base_report import Report
+from restic_backup_report.reports.base_report import Report
 from restic_backup_report.targets.base_target import Target
 from restic_backup_report.utils.restic import Repository, ResticManager
 
