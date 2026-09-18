@@ -172,7 +172,7 @@ class ConfigWriter:
             repositories.append(
                 Repository(
                     name=repository["name"],
-                    display_name=repositories["display_name"],
+                    display_name=repository["display_name"],
                     path=repository["path"],
                     password=self._decrypt(
                         repository["password"],
