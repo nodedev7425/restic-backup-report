@@ -1,8 +1,8 @@
 import os
 import sys
 
-from restic_backup_report.report.base_report import ReportFormatRegister
-from restic_backup_report.report.plaintext_report import PlaintextReport
+from .reports.base_report import ReportFormatRegister
+from .reports.plaintext_report import PlaintextReport
 
 from .app_info import RESTIC_CLI_MIN_VERSION
 
