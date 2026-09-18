@@ -65,7 +65,6 @@ class Target(ABC):
         return stream.getvalue()
 
 
-
 class TargetTypeRegister:
 
 
