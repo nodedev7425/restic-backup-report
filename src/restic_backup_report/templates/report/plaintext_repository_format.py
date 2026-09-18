@@ -1,8 +1,6 @@
 from jinja2 import Template
 
 
-template: Template = Template("""
-{% for repository in repositories %}
-    {{ repository }}
-{% endfor %}
+template: Template = Template("""{{ repository_display_name }}
+name: {{ repository_name }}
 """)

@@ -44,12 +44,12 @@ class Reporter:
 
                 if not ResticManager.is_repo_compatible(repository):
                     for report in self.reports.values():
-                        report.set_repository_incompatible(repository.get_name())
+                        report.set_repository_incompatible(repository)
                     continue
 
                 integrity = ResticManager.check_repo_integrity(repository)
                 for report in self.reports.values():
-                    report.set_repository_integrity(repository.get_name(), integrity)
+                    report.set_repository_integrity(repository, integrity)
                 
                 if integrity:
                     for report in self.reports.values():
