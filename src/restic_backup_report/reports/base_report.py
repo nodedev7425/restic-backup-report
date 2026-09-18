@@ -1,6 +1,13 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from restic_backup_report.utils.restic import Repository
+
+
+@dataclass
+class RepositoryReport:
+    incompatible: bool = False
+    integrity: bool | None = None
 
 
 class Report(ABC):
@@ -9,21 +16,23 @@ class Report(ABC):
     def __init__(self) -> None:
         super().__init__()
 
+        self.repositories: dict[Repository, RepositoryReport] = {}
+
 
     def append_repository(self, repo: Repository) -> None:
-        pass
+        self.repositories[repo] = RepositoryReport()
 
 
-    def set_repository_incompatible(self, repo_name: str) -> None:
-        pass
+    def set_repository_incompatible(self, repo: Repository) -> None:
+        self.repositories[repo].incompatible = True
     
 
-    def set_repository_integrity(self, repo_name: str, status: bool) -> None:
-        pass
+    def set_repository_integrity(self, repo: Repository, status: bool) -> None:
+        self.repositories[repo].integrity = status
 
 
     @abstractmethod
-    def parse(self) -> str:
+    def render(self) -> str:
         pass
 
 
