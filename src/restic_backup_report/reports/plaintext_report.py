@@ -18,8 +18,6 @@ class PlaintextReport(Report):
 
             repos.append(repo_template.render(**data))
 
-        data: dict = {
+        return base_template.render({
             "repositories": repos
-        }
-
-        return base_template.render(**data)
+        })
