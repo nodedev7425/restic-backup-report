@@ -20,7 +20,7 @@ from src.restic_backup_report.templates.config.repository_template import templa
 from src.restic_backup_report.templates.config.target_base_template import template as target_base_template
 
 from restic_backup_report.utils.yaml import find_item, get_nested, get_parent, set_nested
-from src.restic_backup_report.utils.restic import Repository
+from src.restic_backup_report.models.repository import Repository
 
 
 class ConfigValidationError(Exception):

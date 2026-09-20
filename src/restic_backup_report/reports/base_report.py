@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from restic_backup_report.utils.restic import Repository
+from restic_backup_report.models.repository import Repository
 
 
 @dataclass

@@ -4,6 +4,8 @@ import shutil
 
 from packaging.version import Version
 
+from restic_backup_report.models.repository import Repository
+
 from restic_backup_report.app_info import RESTIC_CLI_MIN_VERSION
 
 
@@ -11,63 +13,12 @@ class ResticError(Exception):
     pass
 
 
-class ReportType(Enum):
-    DAILY = auto()
-    WEEKLY = auto()
-    MONTHLY = auto()
-    YEARLY = auto()
-
-
-class BackupFrequency(Enum):
-    DAILY = auto()
-    WEEKLY = auto()
-    MONTHLY = auto()
-    YEARLY = auto()
-
-
-class Repository:
-
-
-    def __init__(self, name: str, display_name: str, path: str, password: str, report: ReportType, frequency: BackupFrequency, tolerance: int):
-        self.__name = name
-        self.__display_name = display_name
-        self.__path = path
-        self.__password = password
-
-        self.__report = report
-        self.__frequency = frequency
-        self.__tolerance = tolerance
-
-
-    def get_name(self):
-        return self.__name
-
-
-    def get_display_name(self):
-        return self.__display_name
-
-
-    def get_path(self):
-        return self.__path
-
-
-    def get_password(self):
-        return self.__password
-
-
-    def get_report(self):
-        return self.__report
-
-
-    def get_frequency(self):
-        return self.__frequency
-
-
-    def get_tolerance(self):
-        return self.__tolerance
-
-
 class ResticManager:
+
+
+    @staticmethod
+    def is_success(stdout: str) -> bool: 
+        pass
 
 
     @staticmethod
