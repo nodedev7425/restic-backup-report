@@ -11,9 +11,13 @@ class PlaintextReport(Report):
         repos: list[str] = []
         for repo in self.repositories.keys():
 
+            report = self.repositories[repo]
+
             data: dict = {
                 "repository_display_name": repo.display_name,
-                "repository_name": repo.name
+                "repository_name": repo.name,
+                "repository_report_incompatible": report.incompatible,
+                "repository_report_integrity": report.integrity
             }
 
             repos.append(repo_template.render(**data))
