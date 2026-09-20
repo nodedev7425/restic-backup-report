@@ -10,6 +10,7 @@ from packaging.version import Version
 from restic_backup_report.models.repository import Repository
 
 from restic_backup_report.app_info import RESTIC_CLI_MIN_VERSION, RESTIC_REPO_MIN_VERSION
+from src.restic_backup_report.models.snapshot import Snapshot
 
 
 class ResticErrorCode(IntEnum):
@@ -115,3 +116,28 @@ class ResticManager:
         data = ResticManager.check_result(result.stdout)
 
         return data.get("num_errors", 0) == 0
+
+
+    @staticmethod
+    def get_snapshots(repo: Repository) -> list[Snapshot]:
+
+        env = None
+        
+        if repo.password is not None:
+            env = os.environ.copy()
+            env["RESTIC_PASSWORD"] = repo.password
+
+        result = subprocess.run(
+            ["restic", "-r", repo.path, "snapshots", "--json"],
+            capture_output=True,
+            text=True,
+            check=False,
+            env=env
+        )
+
+        data = ResticManager.check_result(result.stdout)
+
+        return [
+            Snapshot.from_dict(item)
+            for item in data
+        ]
