@@ -1,12 +1,20 @@
-from enum import Enum, auto
+import os
 import subprocess
 import shutil
+import json
+
+from enum import IntEnum
 
 from packaging.version import Version
 
 from restic_backup_report.models.repository import Repository
 
-from restic_backup_report.app_info import RESTIC_CLI_MIN_VERSION
+from restic_backup_report.app_info import RESTIC_CLI_MIN_VERSION, RESTIC_REPO_MIN_VERSION
+
+
+class ResticErrorCode(IntEnum):
+    REPOSITORY_NOT_FOUND = 10
+    WRONG_PASSWORD = 12
 
 
 class ResticError(Exception):
@@ -17,8 +25,22 @@ class ResticManager:
 
 
     @staticmethod
-    def is_success(stdout: str) -> bool: 
-        pass
+    def check_result(stdout: str) -> dict:
+
+        try:
+            data = json.loads(stdout)
+        except json.decoder.JSONDecodeError:
+            raise ResticError("Unexpected response format")
+
+        if ('message_type' in data) and (data['message_type'] == 'exit_error'):
+
+            if ('code' in data) and (data['code'] == ResticErrorCode.REPOSITORY_NOT_FOUND):
+                raise ResticError("Repository does not exist")
+
+            if ('code' in data) and (data['code'] == ResticErrorCode.WRONG_PASSWORD):
+                raise ResticError("Wrong password or no key found")
+
+        return data
 
 
     @staticmethod
@@ -47,10 +69,27 @@ class ResticManager:
 
 
     @staticmethod
-    def is_repo_compatible(repo: Repository) -> bool:
-        return True
+    def is_repo_compatible(password: str, repo: Repository) -> bool:
+
+        env = None
+
+        if password is not None:
+            env = os.environ.copy()
+            env["RESTIC_PASSWORD"] = password
+
+        result = subprocess.run(
+            ["restic", "-r", repo.path, "cat", "config", "--json"],
+            capture_output=True,
+            text=True,
+            check=False,
+            env=env
+        )
+
+        data = ResticManager.check_result(result.stdout)
+
+        return data["version"] >= RESTIC_REPO_MIN_VERSION
 
 
     @staticmethod
-    def check_repo_integrity(repo: Repository, full = False) -> bool:
+    def check_repo_integrity(password: str, repo: Repository, full = False) -> bool:
         return True
