@@ -6,5 +6,5 @@ class PlaintextReport(Report):
 
 
     def render(self) -> str:
-            return template.render({ "data": self.repositories })
+        return template.render({ "data": self.repositories })
 
