@@ -92,4 +92,26 @@ class ResticManager:
 
     @staticmethod
     def check_repo_integrity(repo: Repository, full = False) -> bool:
-        return True
+
+        env = None
+
+        if repo.password is not None:
+            env = os.environ.copy()
+            env["RESTIC_PASSWORD"] = repo.password
+
+        cmd = ["restic", "-r", repo.path, "check", "--json"]
+
+        if full:
+            cmd.append("--read-data")
+
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            check=False,
+            env=env,
+        )
+
+        data = ResticManager.check_result(result.stdout)
+
+        return data.get("num_errors", 0) == 0
