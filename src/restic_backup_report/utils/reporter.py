@@ -4,6 +4,7 @@ import threading
 from restic_backup_report.reports.base_report import Report
 from restic_backup_report.targets.base_target import Target
 from restic_backup_report.utils.restic import Repository, ResticManager
+from restic_backup_report.models.snapshot import Snapshot
 
 
 class Reporter:
@@ -46,6 +47,7 @@ class Reporter:
                     if not ResticManager.is_repo_compatible(repository):
                         for report in self.reports.values():
                             report.set_repository_incompatible(repository)
+                            report.finish(repository, False)
                         continue
 
                     integrity = ResticManager.check_repo_integrity(repository)
@@ -53,11 +55,17 @@ class Reporter:
                         report.set_repository_integrity(repository, integrity)
                     
                     if integrity:
+                        snapshots: list[Snapshot] = ResticManager.get_snapshots(repository)
+
                         for report in self.reports.values():
                             pass
 
-                except:
-                    pass
+                    else:
+                        report.finish(repository, False)
+
+                except Exception as e:
+                    report.finish(repository, False)
+                    continue
 
             #  Send reports
 

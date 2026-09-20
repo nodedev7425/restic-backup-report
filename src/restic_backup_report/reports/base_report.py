@@ -26,6 +26,10 @@ class Report(ABC):
         self.repositories[repo].integrity = status
 
 
+    def finish(self, repo: Repository, success: bool = True) -> None:
+        self.repositories[repo] = success
+
+
     @abstractmethod
     def render(self) -> str:
         pass
