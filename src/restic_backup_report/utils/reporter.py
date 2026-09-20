@@ -55,10 +55,10 @@ class Reporter:
                     for report in self.reports.values():
                         pass
 
-                #  Send reports
+            #  Send reports
 
-                for target in self.targets:
-                    target.send(self.reports[target.format])
+            for target in self.targets:
+                target.send(self.reports[target.format])
         finally:
             self.done.set()
 
