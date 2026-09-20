@@ -42,23 +42,30 @@ class Reporter:
                 for report in self.reports.values():
                     report.append_repository(repository)
 
-                if not ResticManager.is_repo_compatible(repository):
-                    for report in self.reports.values():
-                        report.set_repository_incompatible(repository)
-                    continue
+                try:
+                    if not ResticManager.is_repo_compatible(repository):
+                        for report in self.reports.values():
+                            report.set_repository_incompatible(repository)
+                        continue
 
-                integrity = ResticManager.check_repo_integrity(repository)
-                for report in self.reports.values():
-                    report.set_repository_integrity(repository, integrity)
-                
-                if integrity:
+                    integrity = ResticManager.check_repo_integrity(repository)
                     for report in self.reports.values():
-                        pass
+                        report.set_repository_integrity(repository, integrity)
+                    
+                    if integrity:
+                        for report in self.reports.values():
+                            pass
+
+                except:
+                    pass
 
             #  Send reports
 
             for target in self.targets:
-                target.send(self.reports[target.format])
+                try:
+                    target.send(self.reports[target.format])
+                except:
+                    pass
         finally:
             self.done.set()
 
