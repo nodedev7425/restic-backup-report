@@ -2,12 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from restic_backup_report.models.repository import Repository
-
-
-@dataclass
-class RepositoryReport:
-    incompatible: bool = False
-    integrity: bool | None = None
+from restic_backup_report.models.repository_report import RepositoryReport
 
 
 class Report(ABC):

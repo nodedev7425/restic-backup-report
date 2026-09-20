@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum, auto
 
 
@@ -15,15 +16,12 @@ class BackupFrequency(Enum):
     YEARLY = auto()
 
 
+@dataclass(frozen=True)
 class Repository:
-
-
-    def __init__(self, name: str, display_name: str, path: str, password: str, report: ReportType, frequency: BackupFrequency, tolerance: int):
-        self.name = name
-        self.display_name = display_name
-        self.path = path
-        self.password = password
-
-        self.report = report
-        self.frequency = frequency
-        self.tolerance = tolerance
+    name: str
+    display_name: str
+    path: str
+    password: str
+    report: ReportType
+    frequency: BackupFrequency
+    tolerance: int
