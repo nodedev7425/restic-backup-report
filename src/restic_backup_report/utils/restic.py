@@ -69,13 +69,13 @@ class ResticManager:
 
 
     @staticmethod
-    def is_repo_compatible(password: str, repo: Repository) -> bool:
+    def is_repo_compatible(repo: Repository) -> bool:
 
         env = None
 
-        if password is not None:
+        if repo.password is not None:
             env = os.environ.copy()
-            env["RESTIC_PASSWORD"] = password
+            env["RESTIC_PASSWORD"] = repo.password
 
         result = subprocess.run(
             ["restic", "-r", repo.path, "cat", "config", "--json"],
@@ -91,5 +91,5 @@ class ResticManager:
 
 
     @staticmethod
-    def check_repo_integrity(password: str, repo: Repository, full = False) -> bool:
+    def check_repo_integrity(repo: Repository, full = False) -> bool:
         return True

@@ -12,8 +12,8 @@ class PlaintextReport(Report):
         for repo in self.repositories.keys():
 
             data: dict = {
-                "repository_display_name": repo.get_display_name(),
-                "repository_name": repo.get_name()
+                "repository_display_name": repo.display_name,
+                "repository_name": repo.name
             }
 
             repos.append(repo_template.render(**data))
