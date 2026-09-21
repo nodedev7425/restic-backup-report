@@ -1,19 +1,19 @@
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import StrEnum
 
 
-class ReportType(Enum):
-    DAILY = auto()
-    WEEKLY = auto()
-    MONTHLY = auto()
-    YEARLY = auto()
+class ReportType(StrEnum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
 
 
-class BackupFrequency(Enum):
-    DAILY = auto()
-    WEEKLY = auto()
-    MONTHLY = auto()
-    YEARLY = auto()
+class BackupFrequency(StrEnum):
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    YEARLY = "yearly"
 
 
 @dataclass(frozen=True)
