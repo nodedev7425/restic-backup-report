@@ -81,7 +81,7 @@ class Reporter:
         ]
     
 
-    def _backups_complete(self, repository: Repository, snapshots: list[Snapshot]) -> tuple[int, int]:
+    def _backups_complete(self, repository: Repository, snapshots: list[Snapshot], now: datetime) -> tuple[int, int]:
 
         for snapshot in snapshots:
 
@@ -126,7 +126,10 @@ class Reporter:
                             datetime.now(ZoneInfo(key=self.general_config.timezone))
                         )
 
-                        backups_complete = self._backups_complete(repository, snapshots)
+                        backups_complete = self._backups_complete(
+                            repository, snapshots,
+                            datetime.now(ZoneInfo(key=self.general_config.timezone))
+                        )
 
                         for report in self.reports.values():
                             pass
