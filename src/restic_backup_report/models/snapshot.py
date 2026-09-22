@@ -5,6 +5,8 @@ from datetime import datetime
 
 @dataclass
 class SnapshotSummary:
+
+
     backup_start: datetime
     backup_end: datetime
     files_new: int
@@ -23,6 +25,8 @@ class SnapshotSummary:
 
 @dataclass
 class Snapshot:
+
+    
     time: datetime
     tree: str
     paths: list[str]
@@ -34,6 +38,7 @@ class Snapshot:
     summary: SnapshotSummary
     id: str
     short_id: str
+
 
     @classmethod
     def from_dict(cls, data: dict) -> "Snapshot":

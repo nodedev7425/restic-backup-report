@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum, auto
 from typing import Any, Sequence
 
@@ -5,7 +6,9 @@ import questionary
 
 from rich import print
 
-from restic_backup_report.types import is_directory, is_integer
+from tzlocal import get_localzone_name
+
+from restic_backup_report.types import is_directory, is_integer, is_timezone
 from restic_backup_report.utils.filesystem import is_writable
 
 
@@ -17,6 +20,7 @@ class InputType(Enum):
     SELECT = auto()
     FILE = auto()
     DIRECTORY = auto()
+    TIMEZONE = auto()
 
 
 def print_error(error: str):
@@ -59,6 +63,14 @@ def request_attribute(name: str, input_type: InputType,
 
         case InputType.DIRECTORY:
             return questionary.path(f"{name}:", validate=is_directory).ask()
+
+        case InputType.TIMEZONE:
+            return questionary.text(
+                f"Choose a valid timezone for {name}\n"
+                f"See the full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\n"
+                f"e.g. your system is currently using: {get_localzone_name()}\n"
+                f"> ",
+                validate=is_timezone).ask()
 
         case _:
             raise ValueError(f"Unsupported input type: {input_type}")

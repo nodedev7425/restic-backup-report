@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 from restic_backup_report.app_info import CONFIG_STANDARD
 
+from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.reports.base_report import ReportFormatRegister
 from restic_backup_report.utils.filesystem import is_writable
 
@@ -77,7 +78,7 @@ class ConfigWriter:
         return True
 
 
-    def new_config(self) -> str:
+    def new_config(self, general_config: GeneralConfig) -> str:
 
         ph = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=4)
 
@@ -88,6 +89,7 @@ class ConfigWriter:
 
         data = {
             "config_standard": CONFIG_STANDARD,
+            "general_config": general_config,
             "master_key_checksum": hashed_password,
             "master_key_checksum_salt": hash_salt,
         }
@@ -98,6 +100,21 @@ class ConfigWriter:
             f.write(rendered)
 
         return master_key
+
+
+    def read_general_config(self) -> GeneralConfig:
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096   
+
+        with open(self.path, "r") as f:
+            config = yaml.load(f)
+
+        return GeneralConfig.from_dict(
+            config["general"]
+        )
 
 
     """

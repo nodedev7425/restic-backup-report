@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from queue import Queue
 from zoneinfo import ZoneInfo
 
+from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.reports.base_report import Report
 
 from restic_backup_report.targets.base_target import Target
@@ -17,7 +18,8 @@ from restic_backup_report.models.snapshot import Snapshot
 class Reporter:
 
 
-    def __init__(self, repos: list[Repository], targets: list[Target], log_queue: Queue[str] | None):
+    def __init__(self, general_config: GeneralConfig, repos: list[Repository], targets: list[Target], log_queue: Queue[str] | None):
+        self.general_config = general_config
         self.repos = repos
         self.targets = targets
 
@@ -121,7 +123,7 @@ class Reporter:
                         snapshots: list[Snapshot] = self._filter_snapshots(
                             ResticManager.get_snapshots(repository),
                             repository.frequency,
-                            datetime.now(ZoneInfo("Europe/Berlin"))
+                            datetime.now(ZoneInfo(key=self.general_config.timezone))
                         )
 
                         backups_complete = self._backups_complete(repository, snapshots)

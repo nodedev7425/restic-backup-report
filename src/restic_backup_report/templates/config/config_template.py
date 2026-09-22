@@ -11,6 +11,9 @@ template: Template = Template("""version: {{ config_standard }}
 # IMPORTANT: If you lose the master key, you will need to generate
 # a new configuration.
 
+general:
+    timezone: {{ general_config.timezone }}
+
 secrets:
     checksum: {{ master_key_checksum }}
     salt: {{ master_key_checksum_salt }}

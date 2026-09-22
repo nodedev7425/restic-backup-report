@@ -29,6 +29,7 @@ def report(args) -> None:
     try:
         writer = ConfigWriter(args.config)
         master_key = get_master_key()
+        general_config = writer.read_general_config()
 
         targets = []
         for target in args.target:
@@ -45,7 +46,7 @@ def report(args) -> None:
             Queue() if not args.silent else None
         )
 
-        reporter = Reporter(repositories, targets, log_queue)
+        reporter = Reporter(general_config, repositories, targets, log_queue)
 
         reporter_thread = threading.Thread(
             target=reporter.run,

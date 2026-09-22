@@ -5,6 +5,7 @@ import questionary
 
 from restic_backup_report.env import MasterKeyError, get_master_key
 
+from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.utils.config_writer import ConfigValidationError, ConfigWriter
 
 from restic_backup_report.utils.console import print_error, InputType, request_attribute
@@ -26,8 +27,11 @@ def generate(args) -> None:
             ).ask():
                 return
 
+        general_config = GeneralConfig()
+        general_config.timezone = request_attribute("timezone", InputType.TIMEZONE)
+
         writer = ConfigWriter(args.config)
-        master_key = writer.new_config()
+        master_key = writer.new_config(general_config)
 
         new_file, filename = tempfile.mkstemp()
         os.write(new_file, str.encode(master_key))

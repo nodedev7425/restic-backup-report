@@ -1,6 +1,7 @@
 import argparse
 
 import os
+from zoneinfo import available_timezones
 
 
 # Validation: argparse
@@ -35,3 +36,10 @@ def is_file(value: str) -> bool:
 
 def is_directory(value: str) -> bool:
     return os.path.isdir(value)
+
+
+def is_timezone(value: str) -> bool | str:
+    value = value.strip()
+    if value in available_timezones():
+        return True
+    return f"'{value}' is not a valid timezone. Example: Europe/Berlin"

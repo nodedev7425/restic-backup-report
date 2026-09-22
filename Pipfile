@@ -13,6 +13,7 @@ cryptography = "*"
 jinja2 = "*"
 "ruamel.yaml" = "*"
 packaging = "*"
+tzlocal = "*"
 
 [dev-packages]
 
