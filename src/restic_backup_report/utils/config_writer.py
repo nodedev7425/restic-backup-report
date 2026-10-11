@@ -1,6 +1,10 @@
 import base64
+from datetime import datetime
 import os
 import secrets
+from zoneinfo import ZoneInfo
+
+from dateutil.rrule import rrule, rrulestr
 
 from ruamel.yaml import YAML
 
@@ -12,6 +16,7 @@ from restic_backup_report.app_info import CONFIG_STANDARD
 
 from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.reports.base_report import ReportFormatRegister
+from restic_backup_report.types import restore_rrule_timezone
 from restic_backup_report.utils.filesystem import is_writable
 
 from restic_backup_report.targets.base_target import Target, TargetTypeRegister
@@ -127,7 +132,7 @@ class ConfigWriter:
 
 
     def add_repository(self, master_key: str, name: str, display_name: str, path: str, password: str,
-        report: str, frequency: str, tolerance: int):
+        report: str, frequency: rrule, tolerance: int):
 
         nonce = os.urandom(12)
         aesgcm = AESGCM(bytes.fromhex(master_key))
@@ -144,7 +149,7 @@ class ConfigWriter:
             "repository_password": encrypted_password,
             "repository_password_nonce": password_nonce,
             "report_interval": report,
-            "backup_frequency": frequency,
+            "backup_frequency": str(frequency),
             "backup_tolerance": tolerance
         }
 
@@ -183,8 +188,15 @@ class ConfigWriter:
         if "repositories" not in config:
             raise ConfigValidationError("No repositories defined")
 
+        timezone = ZoneInfo(self.read_general_config().timezone)
+
         repositories = list[Repository]()
         for repository in config["repositories"]:
+
+            frequency = restore_rrule_timezone(
+                repository["backup"]["frequency"],
+                timezone,
+            )
 
             repositories.append(
                 Repository(
@@ -197,7 +209,7 @@ class ConfigWriter:
                         master_key
                     ),
                     report=repository["report"],
-                    frequency=repository["backup"]["frequency"],
+                    frequency=frequency,
                     tolerance=repository["backup"]["tolerance"]
                 )
             )

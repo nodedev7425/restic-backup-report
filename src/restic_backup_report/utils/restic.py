@@ -92,6 +92,16 @@ class ResticManager:
 
 
     @staticmethod
+    def is_snapshot_compatible(snapshot: dict) -> bool:
+        try:
+            snapshot_version = Version(snapshot.program_version.split(" ", 1)[1])
+        except (IndexError, ValueError):
+            return False
+
+        return snapshot_version <= Version(RESTIC_CLI_MIN_VERSION)
+
+
+    @staticmethod
     def check_repo_integrity(repo: Repository, full = False) -> bool:
 
         env = None
@@ -138,6 +148,9 @@ class ResticManager:
         data = ResticManager.check_result(result.stdout)
 
         return [
-            Snapshot.from_dict(item)
+            snapshot
             for item in data
+            if ResticManager.is_snapshot_compatible(
+                snapshot := Snapshot.from_dict(item)
+            )
         ]

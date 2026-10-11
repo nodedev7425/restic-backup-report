@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime
 
 from restic_backup_report.models.repository import Repository
 from restic_backup_report.models.repository_report import RepositoryReport
+from restic_backup_report.models.snapshot_report import SnapshotReport
 
 
 class Report(ABC):
@@ -24,6 +26,10 @@ class Report(ABC):
 
     def set_repository_integrity(self, repo: Repository, status: bool) -> None:
         self.repositories[repo].integrity = status
+
+
+    def set_repository_snapshot_reports(self, repo: Repository, snapshot_reports: dict[datetime, list[SnapshotReport]]) -> None:
+        self.repositories[repo].snapshots = snapshot_reports
 
 
     def finish(self, repo: Repository, success: bool = True) -> None:

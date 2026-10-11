@@ -1,5 +1,6 @@
 import os
 import tempfile
+from zoneinfo import ZoneInfo
 
 import questionary
 
@@ -69,7 +70,7 @@ def add(args) -> None:
         path = request_attribute("repository path", InputType.DIRECTORY)
         password = request_attribute("repository password", InputType.PASSWORD)
         report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
-        frequency = request_attribute("backup frequency", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
+        frequency = request_attribute("backup frequency", InputType.RRULE, timezone=ZoneInfo(writer.read_general_config().timezone))
         tolerance = request_attribute("backup tolerance", InputType.INTEGER)
 
         writer.add_repository(

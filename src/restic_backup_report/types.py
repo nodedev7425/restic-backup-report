@@ -1,7 +1,9 @@
 import argparse
 
 import os
-from zoneinfo import available_timezones
+
+from dateutil.rrule import rrule, rrulestr
+from zoneinfo import ZoneInfo, available_timezones
 
 
 # Validation: argparse
@@ -30,6 +32,10 @@ def is_integer(value: str) -> bool:
         return False
 
 
+def is_unsigned_int(value: str) -> bool:
+    return is_integer(value) and int(value) >= 0
+
+
 def is_file(value: str) -> bool:
     return os.path.isfile(value)
 
@@ -43,3 +49,40 @@ def is_timezone(value: str) -> bool | str:
     if value in available_timezones():
         return True
     return f"'{value}' is not a valid timezone. Example: Europe/Berlin"
+
+
+def restore_rrule_timezone(
+    rule_string: str,
+    timezone: ZoneInfo,
+) -> rrule:
+    """
+    Restore the configured timezone of a serialized RRULE.
+
+    The DTSTART is interpreted as local time in the configured timezone.
+    All recurrence parameters are preserved.
+    """
+
+    parsed_rule = rrulestr(rule_string)
+
+    # Restore the timezone of DTSTART.
+    dtstart = parsed_rule._dtstart.replace(tzinfo=timezone)
+
+    # Rebuild the rule with the original recurrence parameters.
+    return rrule(
+        freq=parsed_rule._freq,
+        dtstart=dtstart,
+        interval=parsed_rule._interval,
+        wkst=parsed_rule._wkst,
+        count=parsed_rule._count,
+        until=parsed_rule._until,
+        bysetpos=parsed_rule._bysetpos,
+        bymonth=parsed_rule._bymonth,
+        bymonthday=parsed_rule._bymonthday,
+        byyearday=parsed_rule._byyearday,
+        byeaster=parsed_rule._byeaster,
+        byweekno=parsed_rule._byweekno,
+        byweekday=parsed_rule._byweekday,
+        byhour=parsed_rule._byhour,
+        byminute=parsed_rule._byminute,
+        bysecond=parsed_rule._bysecond
+    )

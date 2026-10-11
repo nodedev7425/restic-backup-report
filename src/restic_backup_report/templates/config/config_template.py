@@ -12,9 +12,9 @@ template: Template = Template("""version: {{ config_standard }}
 # a new configuration.
 
 general:
-    timezone: {{ general_config.timezone }}
+    timezone: {{ general_config.timezone | tojson }}
 
 secrets:
-    checksum: {{ master_key_checksum }}
-    salt: {{ master_key_checksum_salt }}
+    checksum: {{ master_key_checksum | tojson }}
+    salt: {{ master_key_checksum_salt | tojson }}
 """)

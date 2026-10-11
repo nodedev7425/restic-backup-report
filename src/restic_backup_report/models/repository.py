@@ -1,15 +1,10 @@
 from dataclasses import dataclass
 from enum import StrEnum
 
+from dateutil.rrule import rrule
+
 
 class ReportType(StrEnum):
-    DAILY = "daily"
-    WEEKLY = "weekly"
-    MONTHLY = "monthly"
-    YEARLY = "yearly"
-
-
-class BackupFrequency(StrEnum):
     DAILY = "daily"
     WEEKLY = "weekly"
     MONTHLY = "monthly"
@@ -25,5 +20,5 @@ class Repository:
     path: str
     password: str
     report: ReportType
-    frequency: BackupFrequency
+    frequency: rrule
     tolerance: int

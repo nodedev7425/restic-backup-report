@@ -1,17 +1,21 @@
 import threading
+import traceback
 
 from datetime import datetime, timedelta
 from queue import Queue
 from zoneinfo import ZoneInfo
 
+from operator import itemgetter
+
 from restic_backup_report.models.general_config import GeneralConfig
+from restic_backup_report.models.snapshot_report import SnapshotReport
 from restic_backup_report.reports.base_report import Report
 
 from restic_backup_report.targets.base_target import Target
 
 from restic_backup_report.utils.restic import Repository, ResticManager
 
-from restic_backup_report.models.repository import Repository, BackupFrequency, ReportType
+from restic_backup_report.models.repository import Repository, ReportType
 from restic_backup_report.models.snapshot import Snapshot
 
 
@@ -35,15 +39,15 @@ class Reporter:
         return 1.0
 
 
-    def _filter_snapshots(self, snapshots: list[Snapshot], frequency: BackupFrequency, now: datetime) -> list[Snapshot]:
+    def _filter_snapshots(self, snapshots: list[Snapshot], report: ReportType, now: datetime) -> tuple[datetime, datetime, list[Snapshot]]:
 
-        match frequency:
+        match report:
 
-            case BackupFrequency.DAILY:
+            case ReportType.DAILY:
                 start = now.replace(hour=0, minute=0, second=0, microsecond=0)
                 end = start + timedelta(days=1)
 
-            case BackupFrequency.WEEKLY:
+            case ReportType.WEEKLY:
                 start = (
                     now - timedelta(days=now.weekday())
                 ).replace(
@@ -54,7 +58,7 @@ class Reporter:
                 )
                 end = start + timedelta(days=7)
 
-            case BackupFrequency.MONTHLY:
+            case ReportType.MONTHLY:
                 start = now.replace(
                     day=1, hour=0, minute=0, second=0, microsecond=0
                 )
@@ -64,7 +68,7 @@ class Reporter:
                 else:
                     end = start.replace(month=start.month + 1)
 
-            case BackupFrequency.YEARLY:
+            case ReportType.YEARLY:
                 start = now.replace(
                     month=1, day=1,
                     hour=0, minute=0, second=0, microsecond=0
@@ -72,24 +76,60 @@ class Reporter:
                 end = start.replace(year=start.year + 1)
 
             case _:
-                raise ValueError(f"Unsupported frequency: {frequency}")
+                raise ValueError(f"Unsupported report: {report}")
 
-        return [
+        return (start, end, [
             snapshot
             for snapshot in snapshots
             if start <= snapshot.time < end
-        ]
+        ])
+
+
+    def _get_expected_backups(self, repository: Repository, start: datetime, end: datetime) -> list[datetime]:
+
+        return repository.frequency.between(start, end)
+
     
+    def _match_snapshots(self, repository: Repository, snapshots: list[Snapshot], expected: list[datetime]) -> dict[datetime, list[Snapshot]]:
 
-    def _backups_complete(self, repository: Repository, snapshots: list[Snapshot], now: datetime) -> tuple[int, int]:
+        matches: dict[datetime, list[Snapshot]] = {}
 
-        for snapshot in snapshots:
+        tolerance = timedelta(hours=repository.tolerance)
+        snapshots = sorted(snapshots, key=lambda snapshot: snapshot.time)
+            
+        for expected_time in expected:
+            start = expected_time - tolerance
+            end = expected_time + tolerance
 
-            # IF: program_version 
+            matches[expected_time] = [
+                snapshot
+                for snapshot in snapshots
+                if start <= snapshot.time < end
+            ]
 
-            pass
+        return matches     
 
-        return [10, 10]                
+
+    def _create_snapshot_reports(self, matches: dict[datetime, list[Snapshot]]) -> dict[datetime, list[SnapshotReport]]:
+
+        result: dict[datetime, list[SnapshotReport]] = {}
+
+        for time, snapshots in matches.items():
+
+            if not snapshots:
+                result[time] = list()
+                continue
+
+            snapshots = sorted(snapshots, key=lambda snapshot: snapshot.time)
+
+            for i in range(len(snapshots)):
+                result[time] = SnapshotReport(
+                    snapshot=snapshots[i],
+                    relevant=(i == len(snapshots) - 1)
+                )
+
+        return result
+                     
 
 
     def run(self):
@@ -120,26 +160,33 @@ class Reporter:
                         report.set_repository_integrity(repository, integrity)
                     
                     if integrity:
-                        snapshots: list[Snapshot] = self._filter_snapshots(
+                        start, end, snapshots = self._filter_snapshots(
                             ResticManager.get_snapshots(repository),
-                            repository.frequency,
+                            repository.report,
                             datetime.now(ZoneInfo(key=self.general_config.timezone))
                         )
 
-                        backups_complete = self._backups_complete(
-                            repository, snapshots,
-                            datetime.now(ZoneInfo(key=self.general_config.timezone))
+                        snapshot_reports = self._create_snapshot_reports(
+                            self._match_snapshots(
+                                repository, snapshots, self._get_expected_backups(
+                                    repository, start, end
+                                )
+                            )
                         )
 
                         for report in self.reports.values():
-                            pass
+                            report.set_repository_snapshot_reports(
+                                repository, snapshot_reports
+                            )
 
                     else:
-                        report.finish(repository, False)
+                        for report in self.reports.values():
+                            report.finish(repository, False)
 
                 except Exception as e:
                     print(e)
-                    report.finish(repository, False)
+                    for report in self.reports.values():
+                        report.finish(repository, False)
                     continue
 
             #  Send reports
@@ -151,6 +198,3 @@ class Reporter:
                     pass
         finally:
             self.done.set()
-
-
-
