@@ -36,6 +36,14 @@ def is_unsigned_int(value: str) -> bool:
     return is_integer(value) and int(value) >= 0
 
 
+def is_integer_between(value: str, min: int, max: int) -> bool | str:
+    try:
+        number = int(value)
+        return True if (number >= min and number < max + 1) else f"Number has to in range {min}-{max}."
+    except ValueError:
+        return f"'{value}' is not a number."
+
+
 def is_file(value: str) -> bool:
     return os.path.isfile(value)
 
@@ -49,6 +57,44 @@ def is_timezone(value: str) -> bool | str:
     if value in available_timezones():
         return True
     return f"'{value}' is not a valid timezone. Example: Europe/Berlin"
+
+
+def is_day(value: str) -> bool | str:
+    return is_integer_between(
+        value, 1, 31
+    )
+
+
+def is_month(value: str) -> bool | str:
+    return is_integer_between(
+        value, 1, 12
+    )
+
+
+def is_year(value: str) -> bool | str:
+    return is_integer_between(
+        value,
+        1900,
+        9999
+    )
+
+
+def is_second(value: str) -> bool | str:
+    return is_integer_between(
+        value, 0, 59
+    )
+
+
+def is_minute(value: str) -> bool | str:
+    return is_integer_between(
+        value, 0, 59
+    )
+
+
+def is_hour(value: str) -> bool | str:
+    return is_integer_between(
+        value, 0, 23
+    )
 
 
 def restore_rrule_timezone(

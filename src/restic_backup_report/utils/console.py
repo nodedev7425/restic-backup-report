@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, time, datetime, timedelta
 from enum import Enum, StrEnum, auto
 from typing import Any, Sequence
 from zoneinfo import ZoneInfo
@@ -11,7 +11,7 @@ from tzlocal import get_localzone_name
 
 from dateutil.rrule import rrule, SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY
 
-from restic_backup_report.types import is_directory, is_integer, is_timezone, is_unsigned_int
+from restic_backup_report.types import is_day, is_directory, is_hour, is_integer, is_minute, is_month, is_second, is_timezone, is_unsigned_int, is_year
 from restic_backup_report.utils.filesystem import is_writable
 
 
@@ -24,6 +24,8 @@ class InputType(Enum):
     FILE = auto()
     DIRECTORY = auto()
     RRULE = auto()
+    TIME = auto()
+    DATE = auto()
     TIMEZONE = auto()
 
 
@@ -80,10 +82,29 @@ def request_attribute(name: str, input_type: InputType,
 
         case InputType.RRULE:
 
-            print(f"In the following we will define '{name}':")
+            if timezone is None:
+                raise ValueError("For 'RRule' is the timezone required.")
+
+            print(f"Please configure the recurrence rule for '{name}':")
 
             confirmed = False
             while not confirmed:
+
+                start_date: date = request_attribute(
+                    "Select the start date",
+                    InputType.DATE
+                )
+
+                start_time: time = request_attribute(
+                    "Select the start time",
+                    InputType.TIME,
+                    timezone=timezone
+                )
+
+                dtstart = datetime.combine(start_date, start_time, tzinfo=timezone)
+
+                if dtstart > datetime.now(tz=timezone):
+                    print_warn("The next reports may be empty.")
 
                 frequence = questionary.select(
                     "Please select the frequence of the repeating task:",
@@ -106,9 +127,9 @@ def request_attribute(name: str, input_type: InputType,
                     case RRuleFreqInput.YEARLY:
                         frequence = YEARLY
 
-                if questionary.confirm(f"Do you want to set an interval, other then one?").ask():
+                if questionary.confirm(f"Do you want to specify an interval other than 1?").ask():
                     interval = int(questionary.text(
-                        "Enter the interval:", validate=is_unsigned_int
+                        "Enter the recurrence interval:", validate=is_unsigned_int
                     ).ask())
                 else:
                    interval=1 
@@ -116,7 +137,7 @@ def request_attribute(name: str, input_type: InputType,
                 # todo: Implement BYxxx
 
                 recurrent = rrule(
-                    dtstart=datetime.now(timezone),
+                    dtstart=dtstart,
                     freq=frequence, 
                     interval=interval
                 )
@@ -124,13 +145,90 @@ def request_attribute(name: str, input_type: InputType,
                 print(f"The recurrent rule: '{''.join(str(recurrent).splitlines())}'")
 
                 confirmed = questionary.confirm(
-                    "Do you want to confirm the values (yes), or enter different values (no)?"
+                    "Do you want to confirm these values?"
                 ).ask()
 
             return recurrent
 
 
-            
+        case InputType.TIME:
+
+            if timezone is None:
+                raise ValueError("For 'Time' is the timezone required.")
+
+            print(f"{name}\nPlease enter a time in the '{timezone.key}' timezone (not UTC unless specified).")
+
+            confirmed = False
+            while not confirmed:
+             
+                hour = int(questionary.text(
+                    "Enter the hour (0-23):",
+                    validate=is_hour
+                ).ask())
+
+                minute = int(questionary.text(
+                      "Enter the minute (0-59):",
+                      validate=is_minute          
+                ).ask())
+
+                second = int(questionary.text(
+                    "Enter the second (0-59):",
+                    validate=is_second         
+                ).ask())
+
+                dtime = time(
+                    hour=hour,
+                    minute=minute,
+                    second=second
+                )
+
+                print(f"Selected time: {dtime}")
+
+                confirmed = questionary.confirm(
+                    "Do you want to confirm these values?"
+                ).ask()
+
+            return dtime
+
+        case InputType.DATE:
+
+            print(f"{name}\nPlease enter a date.")
+
+            confirmed = False
+            while not confirmed:
+             
+                day = int(questionary.text(
+                    "Enter the day (1-31):",
+                    validate=is_day
+                ).ask())
+
+                month = int(questionary.text(
+                    "Enter the month (1-12):",
+                    validate=is_month
+                ).ask())
+
+                year = int(questionary.text(
+                    "Enter the year (e.g. 2026):",
+                    validate=is_year
+                ).ask())
+
+                try:
+                    ddate = datetime(
+                        year=year,
+                        month=month,
+                        day=day
+                    )
+                except ValueError:
+                    print_error("Invalid date. Please enter a valid calendar date.")
+                    continue
+
+                print(f"Selected date: {ddate}")
+
+                confirmed = questionary.confirm(
+                    "Do you want to confirm these values?"
+                ).ask()
+
+            return ddate.date()
 
         case InputType.TIMEZONE:
             return questionary.text(
