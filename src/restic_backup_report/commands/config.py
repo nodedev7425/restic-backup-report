@@ -9,7 +9,7 @@ from restic_backup_report.env import MasterKeyError, get_master_key
 from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.utils.config_writer import ConfigValidationError, ConfigWriter
 
-from restic_backup_report.utils.console import print_error, InputType, request_attribute
+from restic_backup_report.utils.console import print_error, InputType, print_warn, request_attribute
 
 
 def show(args) -> None:
@@ -56,27 +56,52 @@ def generate(args) -> None:
 def add(args) -> None:
     try:
         writer = ConfigWriter(args.config)
-        master_key = get_master_key()
 
-        if not writer.is_secret_valid(master_key): # type: ignore
-            raise MasterKeyError("Invalid master key")
+        match(args.add_type):
 
-        name = request_attribute("repository name", InputType.TEXT)
+            case "repository": 
 
-        if writer.has_repository(name):
-            raise ConfigValidationError("Repository already exists")
+                master_key = get_master_key()
 
-        display_name = request_attribute("display name", InputType.TEXT)
-        path = request_attribute("repository path", InputType.DIRECTORY)
-        password = request_attribute("repository password", InputType.PASSWORD)
-        report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
-        frequency = request_attribute("backup frequency", InputType.RRULE, timezone=ZoneInfo(writer.read_general_config().timezone))
-        tolerance = request_attribute("backup tolerance (in hours)", InputType.INTEGER)
+                if not writer.is_secret_valid(master_key): # type: ignore
+                    raise MasterKeyError("Invalid master key")
 
-        writer.add_repository(
-            master_key,  # type: ignore
-            name, display_name, path, password, report, frequency, tolerance
-        )
+                name = request_attribute("repository name", InputType.TEXT)
+
+                if writer.has_repository(name):
+                    raise ConfigValidationError("Repository already exists")
+
+                display_name = request_attribute("display name", InputType.TEXT)
+                path = request_attribute("repository path", InputType.DIRECTORY)
+                password = request_attribute("repository password", InputType.PASSWORD)
+                report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
+                frequency = request_attribute("backup frequency", InputType.RRULE, timezone=ZoneInfo(writer.read_general_config().timezone))
+                tolerance = request_attribute("backup tolerance (in hours)", InputType.INTEGER)
+
+                writer.add_repository(
+                    master_key,  # type: ignore
+                    name, display_name, path, password, report, frequency, tolerance
+                )
+
+            case "storage":
+
+                name = request_attribute("storage name", InputType.TEXT)
+
+                if writer.has_storage(name):
+                    raise ConfigValidationError("Storage already exists")
+
+                path = request_attribute("path", InputType.DIRECTORY)
+                warning_percent = request_attribute("warning percent", InputType.INTEGER, range=(0, 99))
+                critical_percent = request_attribute("critcial percent", InputType.INTEGER, range=(0, 99))
+
+                if critical_percent < warning_percent:
+                    print_warn("critical should be greater then warning.")
+
+                writer.add_storage(
+                    name, path, warning_percent, critical_percent
+                )
+
+
 
     except ConfigValidationError as e:
         print_error(

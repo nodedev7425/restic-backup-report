@@ -11,7 +11,7 @@ from tzlocal import get_localzone_name
 
 from dateutil.rrule import rrule, SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY
 
-from restic_backup_report.types import is_day, is_directory, is_hour, is_integer, is_minute, is_month, is_second, is_timezone, is_unsigned_int, is_year
+from restic_backup_report.types import is_day, is_directory, is_hour, is_integer, is_integer_between, is_minute, is_month, is_second, is_timezone, is_unsigned_int, is_year
 from restic_backup_report.utils.filesystem import is_writable
 
 
@@ -47,7 +47,7 @@ def print_warn(warn: str):
     print(f"WARN: {warn}")
 
 
-def request_attribute(name: str, input_type: InputType,
+def request_attribute(name: str, input_type: InputType, range: tuple[int, int] | None = None,
     values: Sequence[str] | None = None, timezone: ZoneInfo | None = None) -> Any:
 
     match input_type:
@@ -58,7 +58,13 @@ def request_attribute(name: str, input_type: InputType,
             return questionary.password(f"{name}:").ask()
 
         case InputType.INTEGER:
-            return questionary.text(f"{name}:", validate=is_integer).ask()
+
+            if range is None:
+                return questionary.text(f"{name}:", validate=is_integer).ask()
+            else:
+                return questionary.text(f"{name}:", 
+                    validate=lambda value: is_integer_between(value, range[0], range[1])
+                ).ask()
 
         case InputType.BOOLEAN:
             return questionary.confirm(f"{name}:").ask()

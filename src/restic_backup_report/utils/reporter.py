@@ -152,7 +152,7 @@ class Reporter:
                     if not ResticManager.is_repo_compatible(repository):
                         for report in self.reports.values():
                             report.set_repository_incompatible(repository)
-                            report.finish(repository, False)
+                            report.finish_repository(repository, False)
                         continue
 
                     integrity = ResticManager.check_repo_integrity(repository)
@@ -181,13 +181,15 @@ class Reporter:
 
                     else:
                         for report in self.reports.values():
-                            report.finish(repository, False)
+                            report.finish_repository(repository, False)
 
                 except Exception as e:
                     print(e)
                     for report in self.reports.values():
-                        report.finish(repository, False)
+                        report.finish_repository(repository, False)
                     continue
+
+            for 
 
             #  Send reports
 

@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from restic_backup_report.app_info import CONFIG_STANDARD
 
 from restic_backup_report.models.general_config import GeneralConfig
+from restic_backup_report.models.storage import Storage
 from restic_backup_report.reports.base_report import ReportFormatRegister
 from restic_backup_report.types import restore_rrule_timezone
 from restic_backup_report.utils.filesystem import is_writable
@@ -80,6 +81,8 @@ class ConfigWriter:
     def is_secret_valid(self, master_key: str) -> bool:
         # IF: Secret is None
         # IF: Secret is wrong
+        
+        
         return True
 
 
@@ -315,6 +318,21 @@ class ConfigWriter:
         return target_type(yaml_target)
 
 
-        
+    """
+        Storage
+    """
+
+
+    def has_storage(self, name: str) -> bool:
+        return False
+
+
+    def add_storage(self, name: str) -> None:
+        pass
+
+
+    def get_all_storages(self) -> list[Storage]:
+        pass
+
 
     

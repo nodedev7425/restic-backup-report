@@ -5,6 +5,7 @@ from datetime import datetime
 from restic_backup_report.models.repository import Repository
 from restic_backup_report.models.repository_report import RepositoryReport
 from restic_backup_report.models.snapshot_report import SnapshotReport
+from restic_backup_report.models.storage_report import StorageReport
 
 
 class Report(ABC):
@@ -14,7 +15,9 @@ class Report(ABC):
         super().__init__()
 
         self.repositories: dict[Repository, RepositoryReport] = {}
+        self.storages: list[StorageReport] = []
 
+    # Repository
 
     def append_repository(self, repo: Repository) -> None:
         self.repositories[repo] = RepositoryReport()
@@ -32,8 +35,13 @@ class Report(ABC):
         self.repositories[repo].snapshots = snapshot_reports
 
 
-    def finish(self, repo: Repository, success: bool = True) -> None:
+    def finish_repository(self, repo: Repository, success: bool = True) -> None:
         self.repositories[repo] = success
+
+    # Storage
+
+    def append_storage(self, storage: Storage) -> None:
+        self.storages.append(storage)
 
 
     @abstractmethod
