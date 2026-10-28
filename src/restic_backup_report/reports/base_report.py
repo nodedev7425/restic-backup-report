@@ -5,7 +5,8 @@ from datetime import datetime
 from restic_backup_report.models.repository import Repository
 from restic_backup_report.models.repository_report import RepositoryReport
 from restic_backup_report.models.snapshot_report import SnapshotReport
-from restic_backup_report.models.storage_report import StorageReport
+from restic_backup_report.models.storage import Storage
+from restic_backup_report.models.storage_report import StorageReport, UsageState
 
 
 class Report(ABC):
@@ -15,7 +16,7 @@ class Report(ABC):
         super().__init__()
 
         self.repositories: dict[Repository, RepositoryReport] = {}
-        self.storages: list[StorageReport] = []
+        self.storages: dict[Storage, StorageReport] = {}
 
     # Repository
 
@@ -36,12 +37,36 @@ class Report(ABC):
 
 
     def finish_repository(self, repo: Repository, success: bool = True) -> None:
-        self.repositories[repo] = success
+        self.repositories[repo].success = success
 
     # Storage
 
     def append_storage(self, storage: Storage) -> None:
-        self.storages.append(storage)
+        self.storages[storage] = StorageReport()
+
+
+    def set_storage_partition(self, storage: Storage, partition: str) -> None:
+            self.storages[storage].partition = partition
+
+
+    def set_storage_mountpoint(self, storage: Storage, mountpoint: str) -> None:
+        self.storages[storage].mountpoint = mountpoint
+
+
+    def set_storage_partition_size(self, storage: Storage, partitionSize: str) -> None:
+        self.storages[storage].partition_size = partitionSize
+
+
+    def set_storage_usage(self, storage: Storage, usage: float) -> None:
+        self.storages[storage].usage = usage
+
+
+    def set_storage_usage_state(self, storage: Storage, usageState: UsageState) -> None:
+        self.storages[storage].usageState = usageState
+
+
+    def finish_storage(self, storage: Storage, success: bool = True) -> None:
+        self.storages[storage].success = success
 
 
     @abstractmethod

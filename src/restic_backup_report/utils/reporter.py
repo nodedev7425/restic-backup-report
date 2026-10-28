@@ -18,6 +18,7 @@ from restic_backup_report.utils.restic import Repository, ResticManager
 
 from restic_backup_report.models.repository import Repository, ReportType
 from restic_backup_report.models.snapshot import Snapshot
+from restic_backup_report.utils.storage import get_mountpoint_of_partition, get_partition_of_folder, get_partition_size
 
 
 class Reporter:
@@ -136,15 +137,16 @@ class Reporter:
 
     def run(self):
         try:
-            # Create reports
+            ## Create reports
 
             for target in self.targets:
                 format = target.format
                 if not format in self.reports.keys():
                     self.reports[format] = format()
 
-            # Fill reports
+            ## Fill reports
 
+            # Repository
             for repository in self.repos:
 
                 for report in self.reports.values():
@@ -191,15 +193,45 @@ class Reporter:
                         report.finish_repository(repository, False)
                     continue
 
+            # Storage
             for storage in self.storages:
-                pass
 
-            #  Send reports
+                for report in self.reports.values():
+                    report.append_storage(storage)
+
+                try:
+                    partition = get_partition_of_folder(storage.path)
+                    mountpoint = get_mountpoint_of_partition(partition)
+                    partition_size = get_partition_size(partition)
+                    usage = get_partition:
+
+                    if :
+
+                    if :
+
+                    for report in self.reports.values():
+
+                        report.set_storage_partition(storage, partition)
+                        report.set_storage_mountpoint(storage, mountpoint)
+                        report.set_storage_partition_size(storage, partition_size)
+                        report.set_storage_usage()
+                        report.set_storage_usage_state()
+
+                        report.finish_storage(storage)
+
+                except Exception as e:
+                    print(e)
+                    for report in self.reports.values():
+                        report.finish_storage(storage, False)
+                    continue
+
+            ##  Send reports
 
             for target in self.targets:
                 try:
                     target.send(self.reports[target.format])
-                except:
-                    pass
+                except Exception as e:
+                    print(e)
+                    continue
         finally:
             self.done.set()
