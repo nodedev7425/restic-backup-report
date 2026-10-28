@@ -9,6 +9,7 @@ from operator import itemgetter
 
 from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.models.snapshot_report import SnapshotReport
+from restic_backup_report.models.storage import Storage
 from restic_backup_report.reports.base_report import Report
 
 from restic_backup_report.targets.base_target import Target
@@ -22,10 +23,11 @@ from restic_backup_report.models.snapshot import Snapshot
 class Reporter:
 
 
-    def __init__(self, general_config: GeneralConfig, repos: list[Repository], targets: list[Target], log_queue: Queue[str] | None):
+    def __init__(self, general_config: GeneralConfig, repos: list[Repository], targets: list[Target], storages: list[Storage], log_queue: Queue[str] | None):
         self.general_config = general_config
         self.repos = repos
         self.targets = targets
+        self.storages = storages
 
         self.reports: dict[type[Report], Report] = {}
         self.done = threading.Event()
@@ -189,7 +191,8 @@ class Reporter:
                         report.finish_repository(repository, False)
                     continue
 
-            for 
+            for storage in self.storages:
+                pass
 
             #  Send reports
 

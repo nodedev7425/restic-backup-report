@@ -22,12 +22,14 @@ from restic_backup_report.utils.filesystem import is_writable
 
 from restic_backup_report.targets.base_target import Target, TargetTypeRegister
 
-from src.restic_backup_report.templates.config.config_template import template as config_template
-from src.restic_backup_report.templates.config.repository_template import template as repository_template
-from src.restic_backup_report.templates.config.target_base_template import template as target_base_template
+from restic_backup_report.templates.config.config_template import template as config_template
+from restic_backup_report.templates.config.repository_template import template as repository_template
+from restic_backup_report.templates.config.target_base_template import template as target_base_template
+from restic_backup_report.templates.config.storage_template import template as storage_template
 
 from restic_backup_report.utils.yaml import find_item, get_nested, get_parent, set_nested
-from src.restic_backup_report.models.repository import Repository
+
+from restic_backup_report.models.repository import Repository
 
 
 class ConfigValidationError(Exception):
@@ -327,12 +329,63 @@ class ConfigWriter:
         return False
 
 
-    def add_storage(self, name: str) -> None:
-        pass
+    def add_storage(self, name: str, path: str, warning_percent: int, critical_percent: int) -> None:
 
+        data = {
+            "storage_name": name,
+            "storage_path": path,
+            "storage_warning_percent": warning_percent,
+            "storage_critical_percent": critical_percent
+        }
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096 
+
+        rendered = storage_template.render(**data)       
+        storage_root = yaml.load(rendered)
+
+        with open(self.path, "r", encoding="utf-8") as f:
+            config = yaml.load(f)
+
+        if config is None:
+            config = {}
+
+        if "storages" not in config:
+            config["storages"] = []
+        config["storages"].append(storage_root)
+
+        with open(self.path, "w", encoding="utf-8") as f:
+            yaml.dump(config, f)
+
+        
 
     def get_all_storages(self) -> list[Storage]:
-        pass
+
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        yaml.indent(mapping=2, sequence=2, offset=0)
+        yaml.width = 4096
+
+        with open(self.path, "r", encoding="utf-8") as f:
+            config = yaml.load(f)
+        
+        if "storages" not in config:
+            return list()
+
+        storages = list[Storage]()
+        for storage in config["storages"]:
+
+            storages.append(Storage(
+                    name=storage["name"],
+                    path=storage["path"],
+                    warning_percent=storage["warning_percent"],
+                    critical_percent=storage["critical_percent"]
+                )
+            )
+
+        return storages
 
 
     
