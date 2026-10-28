@@ -358,8 +358,7 @@ class ConfigWriter:
 
         with open(self.path, "w", encoding="utf-8") as f:
             yaml.dump(config, f)
-
-        
+   
 
     def get_all_storages(self) -> list[Storage]:
 
