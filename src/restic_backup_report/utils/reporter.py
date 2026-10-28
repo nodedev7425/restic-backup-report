@@ -10,6 +10,7 @@ from operator import itemgetter
 from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.models.snapshot_report import SnapshotReport
 from restic_backup_report.models.storage import Storage
+from restic_backup_report.models.storage_report import UsageState
 from restic_backup_report.reports.base_report import Report
 
 from restic_backup_report.targets.base_target import Target
@@ -18,7 +19,7 @@ from restic_backup_report.utils.restic import Repository, ResticManager
 
 from restic_backup_report.models.repository import Repository, ReportType
 from restic_backup_report.models.snapshot import Snapshot
-from restic_backup_report.utils.storage import get_mountpoint_of_partition, get_partition_of_folder, get_partition_size
+from restic_backup_report.utils.storage import get_folder_size, get_mountpoint_of_partition, get_partition_of_folder, get_partition_size, get_partition_usage
 
 
 class Reporter:
@@ -200,22 +201,28 @@ class Reporter:
                     report.append_storage(storage)
 
                 try:
+                    folder_size = get_folder_size(storage.path)
+
                     partition = get_partition_of_folder(storage.path)
                     mountpoint = get_mountpoint_of_partition(partition)
                     partition_size = get_partition_size(partition)
-                    usage = get_partition:
 
-                    if :
+                    usage = get_partition_usage(partition)
+                    usage_state = UsageState.NONE
 
-                    if :
+                    if usage <= ((float) (storage.warning_percent / 100)):
+                        usage_state = UsageState.WARNING
+
+                    if usage <= ((float) (storage.warning_percent / 100)):
+                        usage_state = UsageState.CRITICAL
 
                     for report in self.reports.values():
 
                         report.set_storage_partition(storage, partition)
                         report.set_storage_mountpoint(storage, mountpoint)
                         report.set_storage_partition_size(storage, partition_size)
-                        report.set_storage_usage()
-                        report.set_storage_usage_state()
+                        report.set_storage_usage(storage, usage)
+                        report.set_storage_usage_state(storage, usage_state)
 
                         report.finish_storage(storage)
 
