@@ -210,10 +210,10 @@ class Reporter:
                     usage = get_partition_usage(partition)
                     usage_state = UsageState.NONE
 
-                    if usage <= ((float) (storage.warning_percent / 100)):
+                    if usage >= ((float) (storage.warning_percent / 100)):
                         usage_state = UsageState.WARNING
 
-                    if usage <= ((float) (storage.warning_percent / 100)):
+                    if usage >= ((float) (storage.warning_percent / 100)):
                         usage_state = UsageState.CRITICAL
 
                     for report in self.reports.values():
