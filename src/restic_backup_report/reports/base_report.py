@@ -45,8 +45,16 @@ class Report(ABC):
         self.storages[storage] = StorageReport()
 
 
+    def set_storage_folder(self, storage: Storage, folder: str) -> None:
+        self.storages[storage].path = folder
+
+
+    def set_storage_folder_size(self, storage: Storage, size: str) -> None:
+        self.storages[storage].folder_size = size
+
+
     def set_storage_partition(self, storage: Storage, partition: str) -> None:
-            self.storages[storage].partition = partition
+        self.storages[storage].partition = partition
 
 
     def set_storage_mountpoint(self, storage: Storage, mountpoint: str) -> None:

@@ -376,12 +376,8 @@ class ConfigWriter:
         storages = list[Storage]()
         for storage in config["storages"]:
 
-            storages.append(Storage(
-                    name=storage["name"],
-                    path=storage["path"],
-                    warning_percent=storage["warning_percent"],
-                    critical_percent=storage["critical_percent"]
-                )
+            storages.append(
+                Storage.from_dict(storage)
             )
 
         return storages 

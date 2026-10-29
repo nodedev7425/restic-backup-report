@@ -218,6 +218,9 @@ class Reporter:
 
                     for report in self.reports.values():
 
+                        report.set_storage_folder(storage, storage.path)
+                        report.set_storage_folder_size(storage, folder_size)
+
                         report.set_storage_partition(storage, partition)
                         report.set_storage_mountpoint(storage, mountpoint)
                         report.set_storage_partition_size(storage, partition_size)

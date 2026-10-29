@@ -9,13 +9,14 @@ def get_partition_of_folder(path: str) -> str:
     if not os.path.exists(path):
         raise ValueError("Illegal path")
 
-    return subprocess.run(
-        ["df", f"{path}", "|", "tail", "-1", "|", "awḱ", "'{print $1}'"],
+    result: str = subprocess.run(
+        ["df", path],
         capture_output=True,
         text=True,
         check=True
     ).stdout
 
+    return result.splitlines()[-1].split()[0]
 
 @staticmethod
 def get_mountpoint_of_partition(part: str) -> str:
@@ -23,12 +24,14 @@ def get_mountpoint_of_partition(part: str) -> str:
     if not os.path.exists(part):
         raise ValueError("Illegal partition")
 
-    return subprocess.run(
-        ["df", f"{part}", "|", "tail", "-1", "|", "awḱ", "'{print $6}'"],
+    result: str = subprocess.run(
+        ["df", part],
         capture_output=True,
         text=True,
         check=True
     ).stdout
+
+    return result.splitlines()[-1].split()[5]
 
 
 @staticmethod
@@ -37,12 +40,14 @@ def get_partition_size(part: str) -> str:
     if not os.path.exists(part):
         raise ValueError("Illegal partition")
 
-    return subprocess.run(
-        ["df", "-h", f"{part}", "|", "tail", "-1", "|", "awḱ", "'{print $2}'"],
+    result: str = subprocess.run(
+        ["df", "-h", part],
         capture_output=True,
         text=True,
         check=True
     ).stdout
+
+    return result.splitlines()[-1].split()[1]
 
 
 @staticmethod
@@ -52,13 +57,15 @@ def get_partition_usage(part: str) -> float:
         raise ValueError("Illegal partition")
 
     result: str = subprocess.run(
-        ["df", f"{part}", "|", "tail", "-1", "|", "awḱ", "'{print $5}'"],
+        ["df", part],
         capture_output=True,
         text=True,
         check=True
     ).stdout
 
-    return ((float) (result.replace("%", "")) / 100)
+    result = result.splitlines()[-1].split()[4]
+
+    return float(result.replace("%", "")) / 100
 
 
 @staticmethod
@@ -67,9 +74,11 @@ def get_folder_size(path: str) -> str:
     if not os.path.exists(path):
         raise ValueError("Illegal path")
 
-    return subprocess.run(
-        ["du", "-hs", f"{path}", "|", "awk", "'{print $1}'"],
+    result: str = subprocess.run(
+        ["du", "-hs", path],
         capture_output=True,
         text=True,
         check=True
     ).stdout
+
+    return result.split()[0]

@@ -38,6 +38,7 @@ def report(args) -> None:
             )
 
         repositories = writer.get_all_repositories(master_key) # type: ignore
+        storages = writer.get_all_storages()
 
         if len(repositories) == 0:
             raise ValueError("No repositories in config found")
@@ -46,7 +47,7 @@ def report(args) -> None:
             Queue() if not args.silent else None
         )
 
-        reporter = Reporter(general_config, repositories, targets, log_queue)
+        reporter = Reporter(general_config, repositories, targets, storages, log_queue)
 
         reporter_thread = threading.Thread(
             target=reporter.run,

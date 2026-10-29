@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class Storage:
 
 
@@ -14,8 +14,8 @@ class Storage:
     @classmethod
     def from_dict(cls, data: dict) -> "Storage":
         return cls(
-            name = data["name"],
-            path = data["path"],
-            warning_percent = data["warning_percent"],
-            critical_percent = data["critical_percent"]
+            name=data["name"],
+            path=data["path"],
+            warning_percent=data["warning_percent"],
+            critical_percent=data["critical_percent"]
         )

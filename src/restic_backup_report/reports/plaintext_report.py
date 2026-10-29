@@ -7,4 +7,3 @@ class PlaintextReport(Report):
 
     def render(self) -> str:
         return template.render({ "repos": self.repositories, "storages": self.storages })
-
