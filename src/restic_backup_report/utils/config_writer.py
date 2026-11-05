@@ -262,8 +262,8 @@ class ConfigWriter:
                 master_key
             )
 
-            parent[f"{field}_nonce"] = encrypted_value
-            parent[field] = nonce
+            parent[f"{field}_nonce"] = nonce
+            parent[field] = encrypted_value
 
         target_root["config"] = target_config
 
