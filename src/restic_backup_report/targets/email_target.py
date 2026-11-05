@@ -32,11 +32,11 @@ class EmailTarget(Target):
             InputType.TEXT
         )
 
-        self.smtp_port = request_attribute(
+        self.smtp_port = int(request_attribute(
             "smtp_port",
             InputType.SELECT,
-            values=[587, 465, 25, 2525]
-        )
+            values=["587", "465", "25", "2525"]
+        ))
 
         # TODO: Add TLDR und EMAIL 
 

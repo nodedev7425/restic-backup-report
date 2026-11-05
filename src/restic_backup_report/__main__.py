@@ -13,6 +13,7 @@ from .targets.base_target import TargetTypeRegister
 from .cli import run_cli
 
 from .targets.file_target import FileTarget
+from .targets.email_target import EmailTarget
 
 from .utils.console import print_error
 
@@ -30,7 +31,8 @@ def main() -> int:
     })
 
     TargetTypeRegister.register_targets({
-        "file": FileTarget
+        "file": FileTarget,
+        "email": EmailTarget
     })
 
     return run_cli()

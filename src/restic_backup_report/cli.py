@@ -128,5 +128,6 @@ def run_cli() -> int:
     try:
         args = parse_args(parser)
         return args.func(args) or 0
-    except Exception:
+    except Exception as e:
+        print(e)
         return 1

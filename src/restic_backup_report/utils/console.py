@@ -84,7 +84,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
             return questionary.path(f"{name}:", validate=is_writable).ask()
 
         case InputType.DIRECTORY:
-            return questionary.path(f"{name}:", validate=is_directory).ask()
+            return questionary.path(f"{name}:", only_directories=True).ask()
 
         case InputType.RRULE:
 
