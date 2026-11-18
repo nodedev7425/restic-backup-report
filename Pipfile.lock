@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5fd774791319270071950a9cead32f76da498d69ad0cc7326645938129ce479d"
+            "sha256": "33de005e31fd864dee1a916f1df1f04db58dcac3a8719e07e6aecbbc99133291"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -493,6 +493,10 @@
             "index": "pypi",
             "markers": "python_version >= '3.9'",
             "version": "==2.1.1"
+        },
+        "restic-backup-report": {
+            "editable": true,
+            "file": "."
         },
         "rich": {
             "hashes": [

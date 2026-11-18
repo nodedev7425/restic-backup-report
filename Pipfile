@@ -15,6 +15,7 @@ jinja2 = "*"
 packaging = "*"
 tzlocal = "*"
 python-dateutil = "*"
+restic-backup-report = {file = ".", editable = true}
 
 [dev-packages]
 
