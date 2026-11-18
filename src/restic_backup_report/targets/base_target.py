@@ -29,7 +29,11 @@ class Target(ABC):
     def _inputs(self) -> None:
         self.name = request_attribute("name", InputType.TEXT)
         self.format = ReportFormatRegister.get(
-            request_attribute("format", InputType.SELECT, ReportFormatRegister.names())
+            request_attribute(
+                "format", 
+                InputType.SELECT, 
+                values=ReportFormatRegister.names()
+            )
         )
         self.type = type(self)
 

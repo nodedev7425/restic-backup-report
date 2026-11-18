@@ -233,7 +233,7 @@ class ConfigWriter:
 
     def add_target(self, target: Target, master_key: str) -> None:
 
-        encrypted_fields = target.type.encrypted_fields() # type: ignore
+        encrypted_fields = target.type.encrypted_fields()
         
         data = {
             "target_name": target.name,
@@ -262,8 +262,8 @@ class ConfigWriter:
                 master_key
             )
 
-            parent[f"{field}_nonce"] = encrypted_value
-            parent[field] = nonce
+            parent[f"{field}_nonce"] = nonce
+            parent[field] = encrypted_value
 
         target_root["config"] = target_config
 
