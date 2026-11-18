@@ -74,7 +74,7 @@ def add(args) -> None:
                 display_name = request_attribute("display name", InputType.TEXT)
                 path = request_attribute("repository path", InputType.DIRECTORY)
                 password = request_attribute("repository password", InputType.PASSWORD)
-                report = request_attribute("report", InputType.SELECT, ["daily", "weekly", "monthly", "yearly"])
+                report = request_attribute("report", InputType.SELECT, values=["daily", "weekly", "monthly", "yearly"])
                 frequency = request_attribute("backup frequency", InputType.RRULE, timezone=ZoneInfo(writer.read_general_config().timezone))
                 tolerance = request_attribute("backup tolerance (in hours)", InputType.INTEGER)
 
