@@ -9,6 +9,7 @@ from restic_backup_report.utils.console import InputType, request_attribute
 
 class EmailTarget(Target):
 
+
     def _inputs(self) -> None:
         super()._inputs()
 
