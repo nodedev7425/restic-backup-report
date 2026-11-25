@@ -1,3 +1,5 @@
+import traceback
+
 from restic_backup_report.env import MasterKeyError, get_master_key
 
 from restic_backup_report.targets.base_target import Target, TargetTypeRegister
@@ -30,6 +32,7 @@ def setup(args) -> None:
         writer.add_target(target, master_key) # type: ignore
 
     except PermissionError as e:
+        traceback.print_exception(e)
         print_error(e.args[0])
     
 

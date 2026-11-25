@@ -29,6 +29,10 @@ def report(args) -> None:
     try:
         writer = ConfigWriter(args.config)
         master_key = get_master_key()
+
+        if not writer.is_secret_valid(master_key): # type: ignore
+            raise MasterKeyError("Invalid master key")
+
         general_config = writer.read_general_config()
 
         targets = []

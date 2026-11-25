@@ -13,8 +13,6 @@ template: Template = Template("""version: {{ config_standard }}
 
 general:
     timezone: {{ general_config.timezone | tojson }}
-
 secrets:
     checksum: {{ master_key_checksum | tojson }}
-    salt: {{ master_key_checksum_salt | tojson }}
 """)

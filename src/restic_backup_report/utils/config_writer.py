@@ -6,9 +6,12 @@ from zoneinfo import ZoneInfo
 
 from dateutil.rrule import rrule, rrulestr
 
+from restic_backup_report.models.secret_config import SecretConfig
 from ruamel.yaml import YAML
+from ruamel.yaml.comments import CommentedMap
 
 from argon2 import PasswordHasher
+from argon2.exceptions import VerificationError, VerifyMismatchError
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
@@ -81,27 +84,36 @@ class ConfigWriter:
 
 
     def is_secret_valid(self, master_key: str) -> bool:
-        # IF: Secret is None
-        # IF: Secret is wrong
-        
-        
-        return True
+
+        if master_key is None:
+            return False
+
+        secret_config = self.read_secret_config()
+
+        ph = PasswordHasher()
+
+        try:
+            return ph.verify(secret_config.hash, master_key)
+
+        except (VerifyMismatchError, VerificationError):
+            return False
 
 
     def new_config(self, general_config: GeneralConfig) -> str:
 
-        ph = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=4)
+        ph = PasswordHasher(
+            time_cost=3,
+            memory_cost=65536,
+            parallelism=4
+        )
 
         master_key = secrets.token_hex(32)
-        hash_salt = secrets.token_hex(8)
-
-        hashed_password = ph.hash(master_key, salt=str.encode(hash_salt))
+        master_key_hash = ph.hash(master_key)
 
         data = {
             "config_standard": CONFIG_STANDARD,
             "general_config": general_config,
-            "master_key_checksum": hashed_password,
-            "master_key_checksum_salt": hash_salt,
+            "master_key_checksum": master_key_hash,
         }
 
         rendered = config_template.render(**data)
@@ -112,18 +124,34 @@ class ConfigWriter:
         return master_key
 
 
-    def read_general_config(self) -> GeneralConfig:
+    def read_config(self) -> CommentedMap:
 
         yaml = YAML()
         yaml.preserve_quotes = True
         yaml.indent(mapping=2, sequence=2, offset=0)
-        yaml.width = 4096   
+        yaml.width = 4096  
 
         with open(self.path, "r") as f:
             config = yaml.load(f)
 
+        return config
+
+
+    def read_general_config(self) -> GeneralConfig:
+
+        config = self.read_config()
+
         return GeneralConfig.from_dict(
             config["general"]
+        )
+
+
+    def read_secret_config(self) -> SecretConfig:
+    
+        config = self.read_config()
+
+        return SecretConfig.from_dict(
+            config["secrets"]
         )
 
 
@@ -252,6 +280,9 @@ class ConfigWriter:
         target_config = yaml.load(target.to_yaml())
 
         for yaml_key in encrypted_fields.values():
+
+            if yaml_key.startswith("config."):
+                yaml_key = yaml_key[len("config."):]
 
             parent, field = get_parent(target_config, yaml_key)
 
