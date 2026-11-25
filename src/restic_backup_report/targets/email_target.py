@@ -56,8 +56,7 @@ class EmailTarget(Target):
         return {}
 
 
-    def send(self, report: Report) -> None:
-        super().send(report)
+    def send(self, report: Report, format_name: str) -> None:
 
         msg = MIMEMultipart()
         msg['From'] = self.sender
@@ -65,7 +64,16 @@ class EmailTarget(Target):
         msg['Subject'] = 'Test'
 
         body = report.render()
-        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+        match format_name:
+            case "plaintext":
+                mime_type='plain'
+            case "html":
+                mime_type='html'
+            case _:
+                mime_type='plain'
+
+        msg.attach(MIMEText(body, mime_type, 'utf-8'))
 
         # TODO: Support different formats
 

@@ -46,11 +46,9 @@ class Target(ABC):
 
 
     @abstractmethod
-    def send(self, report: Report) -> None:
-
-        if not type(report) is self.format:
-            raise TypeError("The report has wrong format") 
-
+    def send(self, report: Report, format_name: str) -> None:
+        raise NotImplementedError
+    
 
     @abstractmethod
     def encrypted_fields() -> dict[str, str]:   # field name, yaml path

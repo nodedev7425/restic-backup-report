@@ -11,7 +11,7 @@ from restic_backup_report.models.general_config import GeneralConfig
 from restic_backup_report.models.snapshot_report import SnapshotReport
 from restic_backup_report.models.storage import Storage
 from restic_backup_report.models.storage_report import UsageState
-from restic_backup_report.reports.base_report import Report
+from restic_backup_report.reports.base_report import Report, ReportFormatRegister
 
 from restic_backup_report.targets.base_target import Target
 
@@ -239,7 +239,7 @@ class Reporter:
 
             for target in self.targets:
                 try:
-                    target.send(self.reports[target.format])
+                    target.send(self.reports[target.format], ReportFormatRegister.get_name(target.format))
                 except Exception as e:
                     print(e)
                     continue
