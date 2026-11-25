@@ -1,6 +1,8 @@
 import os
 import sys
 
+from restic_backup_report.reports.html_report import HtmlReport
+
 from .reports.base_report import ReportFormatRegister
 from .reports.plaintext_report import PlaintextReport
 
@@ -27,7 +29,8 @@ def main() -> int:
         return 1
 
     ReportFormatRegister.register_formats({
-        "plaintext": PlaintextReport
+        "plaintext": PlaintextReport,
+        "html": HtmlReport
     })
 
     TargetTypeRegister.register_targets({
