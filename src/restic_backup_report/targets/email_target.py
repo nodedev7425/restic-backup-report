@@ -78,7 +78,7 @@ class EmailTarget(Target):
     @staticmethod
     def encrypted_fields() -> dict[str, str]:
         return {  
-            "password": "password"
+            "config.password": "config.password"
         } 
 
 
