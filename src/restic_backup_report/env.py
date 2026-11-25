@@ -1,10 +1,7 @@
 import os
 
+from restic_backup_report.errors.masterkey_error import MasterKeyError
 from restic_backup_report.utils.console import print_error
-
-
-class MasterKeyError(Exception):
-    pass
 
 
 def get_master_key() -> str | None:

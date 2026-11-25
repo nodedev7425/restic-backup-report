@@ -6,6 +6,8 @@ from zoneinfo import ZoneInfo
 import questionary
 
 from rich import print
+from rich.console import Console
+from rich.markup import escape
 
 from tzlocal import get_localzone_name
 
@@ -14,6 +16,8 @@ from dateutil.rrule import rrule, SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MON
 from restic_backup_report.types import is_day, is_directory, is_hour, is_integer, is_integer_between, is_minute, is_month, is_second, is_timezone, is_unsigned_int, is_year
 from restic_backup_report.utils.filesystem import is_writable
 
+console = Console()
+error_console = Console(stderr=True)
 
 class InputType(Enum):
     TEXT = auto()
@@ -39,35 +43,44 @@ class RRuleFreqInput(StrEnum):
     YEARLY = "Yearly"
 
 
-def print_error(error: str):
-    print(f"FEHLER: {error}")
+def print_error(error: str) -> None:
+    error_console.print(
+        f"[light_slate_blue]([/light_slate_blue]"
+        f"[bold red]Error[/bold red]"
+        f"[light_slate_blue])[/light_slate_blue] "
+        f"{escape(error)}"
+    )
 
 
 def print_warn(warn: str):
-    print(f"WARN: {warn}")
-
+    console.print(
+        f"[light_slate_blue]([/light_slate_blue]"
+        f"[bold yellow]Error[/bold yellow]"
+        f"[light_slate_blue])[/light_slate_blue] "
+        f"{escape(warn)}"
+    )
 
 def request_attribute(name: str, input_type: InputType, range: tuple[int, int] | None = None,
     values: Sequence[str] | None = None, timezone: ZoneInfo | None = None) -> Any:
 
     match input_type:
         case InputType.TEXT:
-            return questionary.text(f"{name}:").ask()
+            return questionary.text(f"{name}:").unsafe_ask()
 
         case InputType.PASSWORD:
-            return questionary.password(f"{name}:").ask()
+            return questionary.password(f"{name}:").unsafe_ask()
 
         case InputType.INTEGER:
 
             if range is None:
-                return questionary.text(f"{name}:", validate=is_integer).ask()
+                return questionary.text(f"{name}:", validate=is_integer).unsafe_ask()
             else:
                 return questionary.text(f"{name}:", 
                     validate=lambda value: is_integer_between(value, range[0], range[1])
-                ).ask()
+                ).unsafe_ask()
 
         case InputType.BOOLEAN:
-            return questionary.confirm(f"{name}:").ask()
+            return questionary.confirm(f"{name}:").unsafe_ask()
 
         case InputType.SELECT:
             if values is None:
@@ -78,13 +91,13 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
             return questionary.select(
                 f"{name}:",
                 choices=values,
-            ).ask()
+            ).unsafe_ask()
 
         case InputType.FILE:
-            return questionary.path(f"{name}:", validate=is_writable).ask()
+            return questionary.path(f"{name}:", validate=is_writable).unsafe_ask()
 
         case InputType.DIRECTORY:
-            return questionary.path(f"{name}:", only_directories=True).ask()
+            return questionary.path(f"{name}:", only_directories=True).unsafe_ask()
 
         case InputType.RRULE:
 
@@ -115,7 +128,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
                 frequence = questionary.select(
                     "Please select the frequence of the repeating task:",
                     [el.value for el in RRuleFreqInput]
-                ).ask()
+                ).unsafe_ask()
 
                 match frequence:
                     case RRuleFreqInput.SECONDLY:
@@ -136,7 +149,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
                 if questionary.confirm(f"Do you want to specify an interval other than 1?").ask():
                     interval = int(questionary.text(
                         "Enter the recurrence interval:", validate=is_unsigned_int
-                    ).ask())
+                    ).unsafe_ask())
                 else:
                    interval=1 
 
@@ -152,7 +165,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
 
                 confirmed = questionary.confirm(
                     "Do you want to confirm these values?"
-                ).ask()
+                ).unsafe_ask()
 
             return recurrent
 
@@ -170,17 +183,17 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
                 hour = int(questionary.text(
                     "Enter the hour (0-23):",
                     validate=is_hour
-                ).ask())
+                ).unsafe_ask())
 
                 minute = int(questionary.text(
                       "Enter the minute (0-59):",
                       validate=is_minute          
-                ).ask())
+                ).unsafe_ask())
 
                 second = int(questionary.text(
                     "Enter the second (0-59):",
                     validate=is_second         
-                ).ask())
+                ).unsafe_ask())
 
                 dtime = time(
                     hour=hour,
@@ -192,7 +205,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
 
                 confirmed = questionary.confirm(
                     "Do you want to confirm these values?"
-                ).ask()
+                ).unsafe_ask()
 
             return dtime
 
@@ -206,17 +219,17 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
                 day = int(questionary.text(
                     "Enter the day (1-31):",
                     validate=is_day
-                ).ask())
+                ).unsafe_ask())
 
                 month = int(questionary.text(
                     "Enter the month (1-12):",
                     validate=is_month
-                ).ask())
+                ).unsafe_ask())
 
                 year = int(questionary.text(
                     "Enter the year (e.g. 2026):",
                     validate=is_year
-                ).ask())
+                ).unsafe_ask())
 
                 try:
                     ddate = datetime(
@@ -232,7 +245,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
 
                 confirmed = questionary.confirm(
                     "Do you want to confirm these values?"
-                ).ask()
+                ).unsafe_ask()
 
             return ddate.date()
 
@@ -242,7 +255,7 @@ def request_attribute(name: str, input_type: InputType, range: tuple[int, int] |
                 f"See the full list: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\n"
                 f"e.g. your system is currently using: {get_localzone_name()}\n"
                 f"> ",
-                validate=is_timezone).ask()
+                validate=is_timezone).unsafe_ask()
 
         case _:
             raise ValueError(f"Unsupported input type: {input_type}")

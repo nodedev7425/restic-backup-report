@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 
 from dateutil.rrule import rrule, rrulestr
 
+from restic_backup_report.errors.configuration_error import ConfigurationError
 from restic_backup_report.models.secret_config import SecretConfig
 from ruamel.yaml import YAML
 from ruamel.yaml.comments import CommentedMap
@@ -45,7 +46,7 @@ class ConfigWriter:
     def __init__(self, path: str) -> None:
 
         if not is_writable(path):
-            raise PermissionError(f"Cannot write to {path}")
+            raise ConfigurationError(f"Cannot write to {path}")
 
         self.path = path
 

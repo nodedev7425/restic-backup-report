@@ -1,6 +1,7 @@
 import os
 import sys
 
+from restic_backup_report.logging_config import setup_logging
 from restic_backup_report.reports.html_report import HtmlReport
 
 from .reports.base_report import ReportFormatRegister
@@ -21,6 +22,9 @@ from .utils.console import print_error
 
 
 def main() -> int:
+
+    setup_logging(debug=os.environ.get("DEBUG", False))
+
     if not ResticManager.is_cli_compatible():
         print_error(
             f"This application requires Restic "

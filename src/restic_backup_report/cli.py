@@ -1,6 +1,10 @@
 import argparse
 
+import logging
 from typing import Any
+
+from restic_backup_report.errors.command_error import CommandError
+from restic_backup_report.utils.console import print_error
 
 from .types import file_path
 
@@ -119,7 +123,12 @@ def parse_args(parser: argparse.ArgumentParser) -> Any:
     return parser.parse_args()
 
 
+def cli_cleanup(status: int) -> int:
+    return status
+
+
 def run_cli() -> int:
+
     parser = argparse.ArgumentParser(
         prog="restic-backup-report",
         description="Monitoring and reporting tool for Restic backups.",
@@ -127,7 +136,40 @@ def run_cli() -> int:
 
     try:
         args = parse_args(parser)
-        return args.func(args) or 0
-    except Exception as e:
-        print(e)
-        return 1
+        args.func(args)
+
+        return 0
+    
+    except CommandError as e:
+
+        print_error(e.cli_message)
+
+        logging.error(
+            "Command failed: %s",
+            e
+        )
+
+        logging.debug(
+            "Command traceback",
+            exc_info=True
+        )
+
+        return cli_cleanup(1)
+
+    except KeyboardInterrupt:
+
+        return cli_cleanup(0)
+
+    except Exception:
+
+        print_error(
+            "An unexpected error occurred. "
+            "If the problem persists, please report it at:\n"
+            "https://github.com/nodedev7425/restic-backup-report"
+        )
+
+        logging.exception(
+            "Unexpected error"
+        )
+
+        return cli_cleanup(1)
